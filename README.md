@@ -260,31 +260,3 @@ Ejecuta las pruebas con:
 cd backend
 pnpm test
 ```
-
-## Hoja de ruta
-
-- [ ] Completar la reconstrucción del backend.
-- [ ] Completar la reconstrucción del frontend.
-- [ ] Incorporar migraciones de base de datos.
-- [ ] Añadir pruebas automatizadas al frontend.
-- [ ] Configurar integración continua con GitHub Actions.
-- [ ] Añadir contenedores Docker para desarrollo y producción.
-- [ ] Publicar una versión demostrativa.
-- [ ] Incorporar capturas de pantalla y documentación visual.
-
-## Origen del proyecto
-
-Este repositorio corresponde a una reconstrucción personal y educativa del proyecto **CashTrackr**, utilizado para profundizar en el desarrollo de aplicaciones full stack con Next.js, Express, TypeScript, PostgreSQL, autenticación y pruebas automatizadas.
-
-La implementación original utilizada como referencia forma parte del contenido educativo de **Código con Juan**. Esta versión está siendo reconstruida, documentada y mejorada por Daniel Mira Restrepo como parte de su portafolio profesional.
-
-## Autor
-
-**Daniel Mira Restrepo**
-
-- GitHub: [@DanielMR-dev](https://github.com/DanielMR-dev)
-- LinkedIn: [Daniel Mira Restrepo](https://www.linkedin.com/in/daniel-mira-restrepo-/)
-
-## Licencia
-
-Antes de reutilizar, distribuir o licenciar el proyecto, revisa las condiciones aplicables al material educativo original utilizado como referencia.
