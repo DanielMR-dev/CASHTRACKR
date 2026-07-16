@@ -1,0 +1,28 @@
+{
+  "name": "cashtrackr_backend",
+  "version": "1.0.0",
+  "description": "Proyecto CashTrackr React TypeScript y NodeJS",
+  "license": "ISC",
+  "author": "DanielMR-dev",
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "dev:api": "tsx watch src/index.ts --api",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "start": "node ./dist/index.js"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "express": "^5.2.1",
+    "morgan": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^24.13.3",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
+  }
+}
