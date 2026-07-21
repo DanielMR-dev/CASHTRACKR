@@ -43,8 +43,21 @@ export class BudgetController {
         }
     }
 
-    static updateBudgetById = async (req: Request, res: Response) => {
-        console.log('Actualizando desde updateBudgetById');
+    static updateBudgetById = async (req: Request<{ id: string }>, res: Response) => {
+        try {
+            const { id } = req.params;
+            const budget = await Budget.findByPk(id);
+            if (!budget) {
+                const error = new Error('Presupuesto no encontrado');
+                return res.status(404).json({ error: error.message });
+            }
+            // Escribir los cambios del body
+            await budget.update(req.body);
+            res.status(200).json({ message: 'Presupuesto actualizado correctamente' });
+        } catch (error) {
+            //console.log(error);
+            res.status(500).json({ error: 'Error al actualizar el presupuesto' });
+        }
     }
 
     static deleteBudgetById = async (req: Request, res: Response) => {
