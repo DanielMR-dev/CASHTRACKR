@@ -6,10 +6,10 @@ import { Table, Column, Model, DataType, HasMany, BelongsTo, ForeignKey } from '
 
 export class Budget extends Model {
     @Column({ type: DataType.STRING(100) })
-    name: string;
+    declare name: string;
 
     @Column({ type: DataType.DECIMAL })
-    amount: number;
+    declare amount: number;
 };
 
 export default Budget;
