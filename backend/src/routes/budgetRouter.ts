@@ -1,10 +1,10 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
+import { BudgetController } from "../controllers/BudgetController";
 
 const router: Router = Router();
 
 // Routes
-router.get('/', (req: Request, res: Response) => {
-    console.log('Desde budgetRouter');
-});
+router.get('/', BudgetController.getAll);
+router.post('/', BudgetController.create);
 
 export default router;
