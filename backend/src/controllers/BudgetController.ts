@@ -60,7 +60,20 @@ export class BudgetController {
         }
     }
 
-    static deleteBudgetById = async (req: Request, res: Response) => {
-        console.log('Eliminando desde deleteBudgetById');
+    static deleteBudgetById = async (req: Request<{ id: string }>, res: Response) => {
+        try {
+            const { id } = req.params;
+            const budget = await Budget.findByPk(id);
+            if (!budget) {
+                const error = new Error('Presupuesto no encontrado');
+                return res.status(404).json({ error: error.message });
+            }
+            // Eliminar el presupuesto encontrado
+            await budget.destroy();
+            res.status(200).json({ message: 'Presupuesto eliminado correctamente' });
+        } catch (error) {
+            //console.log(error);
+            res.status(500).json({ error: 'Error al eliminar el presupuesto' });
+        }
     }
 }
