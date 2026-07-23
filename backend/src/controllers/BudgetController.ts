@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import Budget from "../models/Budget";
 
 export class BudgetController { 
-    static getAll = async (req: Request, res: Response) => {
+    static getAllBudgets = async (req: Request, res: Response) => {
         try {
             const budget = await Budget.findAll({
                 order: [
@@ -17,7 +17,7 @@ export class BudgetController {
         }
     }
 
-    static create = async (req: Request, res: Response) => {
+    static createBudget = async (req: Request, res: Response) => {
         try {
             const budget = new Budget(req.body);
             await budget.save();
