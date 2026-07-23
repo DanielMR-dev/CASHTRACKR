@@ -28,26 +28,22 @@ export class BudgetController {
         }
     }
     
-    static getBudgetById = async (req: Request<{ id: string }>, res: Response) => {
+    static getBudgetById = async (req: Request, res: Response) => {
         res.status(200).json(req.budget);
     }
 
-    static updateBudgetById = async (req: Request<{ id: string }>, res: Response) => {
+    static updateBudgetById = async (req: Request, res: Response) => {
+        if (!req.budget) {
+            return res.status(500).json({ error: 'Error interno: Presupuesto no disponible' });
+        }
         try {
-            const { id } = req.params;
-            const budget = await Budget.findByPk(id);
-            if (!budget) {
-                const error = new Error('Presupuesto no encontrado');
-                return res.status(404).json({ error: error.message });
-            }
-            // Escribir los cambios del body
-            await budget.update(req.body);
+            await req.budget.update(req.body);
             res.status(200).json({ message: 'Presupuesto actualizado correctamente' });
         } catch (error) {
-            //console.log(error);
             res.status(500).json({ error: 'Error al actualizar el presupuesto' });
         }
     }
+
 
     static deleteBudgetById = async (req: Request<{ id: string }>, res: Response) => {
         try {

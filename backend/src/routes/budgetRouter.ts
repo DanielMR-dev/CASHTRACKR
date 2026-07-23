@@ -29,6 +29,7 @@ router.get('/:id',
 
 router.put('/:id', 
     validateBudgetId,
+    validateBudgetExists,
     body('name')
         .notEmpty().withMessage('El nombre del presupuesto es requerido')
         .isString().withMessage('El nombre debe ser una cadena de texto'),
