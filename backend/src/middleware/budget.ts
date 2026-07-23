@@ -8,7 +8,7 @@ declare global {
             budget?: Budget;
         }
     }
-}
+};
 
 export const validateBudgetId = async (req: Request, res: Response, next: NextFunction) => {
     await param('budgetId')
@@ -17,12 +17,12 @@ export const validateBudgetId = async (req: Request, res: Response, next: NextFu
             .custom(value => value > 0).withMessage('ID no válido')
             .run(req);
 
-    const errors = validationResult(req);
+    let errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
     next();
-}
+};
 
 export const validateBudgetExists = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -37,8 +37,8 @@ export const validateBudgetExists = async (req: Request, res: Response, next: Ne
     } catch (error) {
         //console.log(error);
         res.status(500).json({ error: 'Error al actualizar el presupuesto' });
-    }
-}
+    };
+};
 
 export const validateBudgetInput = async (req: Request, res: Response, next: NextFunction) => {
     await body('name')
@@ -51,4 +51,4 @@ export const validateBudgetInput = async (req: Request, res: Response, next: Nex
         .custom((value) => value > 0).withMessage('La cantidad debe ser mayor a 0') // Se debe evaluar como "false", no como "true"
         .run(req);
     next();
-}
+};
