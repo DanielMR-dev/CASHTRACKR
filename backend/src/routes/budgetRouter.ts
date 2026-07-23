@@ -51,7 +51,11 @@ router.post('/:budgetId/expenses',
 router.get('/:budgetId/expenses/:expenseId', ExpensesController.getExpenseById);
 
 // Update Expense by ID
-router.put('/:budgetId/expenses/:expenseId', ExpensesController.updateExpenseById);
+router.put('/:budgetId/expenses/:expenseId', 
+    validateExpenseInput,
+    handleInputErrors,
+    ExpensesController.updateExpenseById
+);
 
 // Delete Expense by ID
 router.delete('/:budgetId/expenses/:expenseId', ExpensesController.deleteExpenseById);
