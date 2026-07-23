@@ -7,6 +7,9 @@ import { validateBudgetExists, validateBudgetId } from "../middleware/budget";
 const router: Router = Router();
 
 // Routes
+router.param('budgetId', validateBudgetId);
+router.param('budgetId', validateBudgetExists);
+
 router.get('/', BudgetController.getAll);
 
 router.post('/', 
@@ -21,15 +24,9 @@ router.post('/',
     BudgetController.create
 );
 
-router.get('/:id', 
-    validateBudgetId,
-    validateBudgetExists,
-    BudgetController.getBudgetById
-);
+router.get('/:budgetId', BudgetController.getBudgetById);
 
-router.put('/:id', 
-    validateBudgetId,
-    validateBudgetExists,
+router.put('/:budgetId',
     body('name')
         .notEmpty().withMessage('El nombre del presupuesto es requerido')
         .isString().withMessage('El nombre debe ser una cadena de texto'),
@@ -41,10 +38,6 @@ router.put('/:id',
     BudgetController.updateBudgetById
 );
 
-router.delete('/:id', 
-    validateBudgetId,
-    validateBudgetExists,
-    BudgetController.deleteBudgetById
-);
+router.delete('/:budgetId', BudgetController.deleteBudgetById);
 
 export default router;
