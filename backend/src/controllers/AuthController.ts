@@ -68,6 +68,24 @@ export class AuthController {
     }
 
     static forgotPassword = async (req: Request, res: Response) => {
-        console.log('Desde forgortPassword');
+        const { email } = req.body;
+        // Revisar que el Usuario exista
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        try {
+            user.token = generateToken();
+            await user.save();
+            await AuthEmail.sendPasswordResetToken({
+                name: user.name,
+                email: user.email,
+                token: user.token
+            });
+            res.status(200).json({ message: 'Se ha enviado un correo con las instrucciones para restablecer tu contraseña' });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Error al restablecer la contraseña' });
+        }
     }
 }
