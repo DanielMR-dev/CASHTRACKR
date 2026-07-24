@@ -88,4 +88,13 @@ export class AuthController {
             res.status(500).json({ error: 'Error al restablecer la contraseña' });
         }
     }
+
+    static validateToken = async (req: Request, res: Response) => {
+        const { token } = req.body;
+        const tokenExist = await User.findOne({ where: { token } });
+        if (!tokenExist) {
+            return res.status(404).json({ error: 'Token no válido' });
+        }
+        res.status(200).json({ message: 'Token válido' });
+    }
 }

@@ -54,4 +54,13 @@ router.post('/forgot-password',
     AuthController.forgotPassword
 );
 
+// Validar Token
+router.post('/validate-token', 
+    body('token')
+        .notEmpty().withMessage('El token es obligatorio')
+        .isLength({ min: 6, max: 6 }).withMessage('Token no válido'),
+    handleInputErrors,
+    AuthController.validateToken
+);
+
 export default router;
