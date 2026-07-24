@@ -66,4 +66,8 @@ export class AuthController {
         const token = generateJWT(user.id);
         res.status(200).json(token);
     }
+
+    static forgotPassword = async (req: Request, res: Response) => {
+        console.log('Desde forgortPassword');
+    }
 }

@@ -45,4 +45,13 @@ router.post('/login',
     AuthController.login
 );
 
+// Olvidé mi contraseña
+router.post('/forgot-password', 
+    body('email')
+        .notEmpty().withMessage('El email es obligatorio')
+        .isEmail().withMessage('Email no válido'),
+    handleInputErrors,
+    AuthController.forgotPassword
+);
+
 export default router;
