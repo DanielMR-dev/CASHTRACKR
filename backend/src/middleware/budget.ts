@@ -42,13 +42,13 @@ export const validateBudgetExists = async (req: Request, res: Response, next: Ne
 
 export const validateBudgetInput = async (req: Request, res: Response, next: NextFunction) => {
     await body('name')
-        .notEmpty().withMessage('El nombre del presupuesto es requerido')
-        .isString().withMessage('El nombre debe ser una cadena de texto')
-        .run(req);
+            .notEmpty().withMessage('El nombre del presupuesto es requerido')
+            .isString().withMessage('El nombre debe ser una cadena de texto')
+            .run(req);
     await body('amount')
-        .notEmpty().withMessage('La cantidad del presupuesto es requerido')
-        .isNumeric().withMessage('La cantidad debe ser un número')
-        .custom((value) => value > 0).withMessage('La cantidad debe ser mayor a 0') // Se debe evaluar como "false", no como "true"
-        .run(req);
+            .notEmpty().withMessage('La cantidad del presupuesto es requerido')
+            .isNumeric().withMessage('La cantidad debe ser un número')
+            .custom((value) => value > 0).withMessage('La cantidad debe ser mayor a 0') // Se debe evaluar como "false", no como "true"
+            .run(req);
     next();
 };
