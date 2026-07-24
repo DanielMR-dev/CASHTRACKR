@@ -20,4 +20,14 @@ router.post('/create-account',
     AuthController.createAccount
 );
 
+// Confirmar Cuenta
+router.post('/confirm-account',
+    body('token')
+        .notEmpty()
+        .isLength({ min: 6, max: 6 })
+        .withMessage('Token no válido'),
+    handleInputErrors,
+    AuthController.confirmAccount
+);
+
 export default router;

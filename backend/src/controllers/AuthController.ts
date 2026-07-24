@@ -28,4 +28,8 @@ export class AuthController {
             res.status(500).json({ error: 'Error al crear la cuenta' });
         }
     }
+
+    static confirmAccount = async (req: Request, res: Response) => {
+        console.log('Desde confirmAccount');
+    }
 }
