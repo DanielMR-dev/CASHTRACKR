@@ -34,4 +34,15 @@ router.post('/confirm-account',
     AuthController.confirmAccount
 );
 
+// Iniciar Sesión
+router.post('/login',
+    body('email')
+        .notEmpty().withMessage('El email es obligatorio')
+        .isEmail().withMessage('Email no válido'),
+    body('password')
+        .notEmpty().withMessage('La contraseña es obligatoria'),
+    handleInputErrors,
+    AuthController.login
+);
+
 export default router;

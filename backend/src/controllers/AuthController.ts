@@ -45,4 +45,8 @@ export class AuthController {
             res.status(500).json({ error: 'Error al confirmar la cuenta' });
         }
     }
+
+    static login = async (req: Request, res: Response) => {
+        
+    }
 }
