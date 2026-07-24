@@ -19,8 +19,8 @@ class User extends Model {
     @Column({ type: DataType.STRING(60) })
     declare password: string;
 
-    @Column({ type: DataType.STRING(100) })
-    declare token: string;
+    @Column({ type: DataType.STRING(6) })
+    declare token: string | null;
 
     @Default(false)
     @Column({ type: DataType.BOOLEAN })
