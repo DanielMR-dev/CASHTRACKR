@@ -51,7 +51,11 @@ export class AuthController {
         // Revisar que el Usuario exista
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(409).json({ error: 'Usuario no encontrado' });
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        // Revisar que la cuenta esté confirmada
+        if (!user.confirmed) {
+            return res.status(403).json({ error: 'Tu cuenta no ha sido confirmada' });
         }
         
         res.json(user);
