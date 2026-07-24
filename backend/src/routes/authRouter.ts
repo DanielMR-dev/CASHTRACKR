@@ -2,10 +2,14 @@ import { Router } from "express";
 import { body } from "express-validator";
 import { AuthController } from "../controllers/AuthController";
 import { handleInputErrors } from "../middleware/validation";
+import { limiter } from "../config/limiter";
 
 const router: Router = Router();
 
-// Crear un Cuenta
+// Proteger todas las rutas de Auth con el limitador
+router.use(limiter);
+
+// Crear una Cuenta
 router.post('/create-account',
     body('name')
         .notEmpty().withMessage('El nombre no puede ir vacío')
