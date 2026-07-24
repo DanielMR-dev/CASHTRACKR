@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import User from "../models/User";
-import { hashPassword } from "../utils/auth";
+import { checkPassword, hashPassword } from "../utils/auth";
 import { generateToken } from "../utils/token";
 import { AuthEmail } from "../emails/AuthEmail";
 
@@ -47,7 +47,7 @@ export class AuthController {
     }
 
     static login = async (req: Request, res: Response) => {
-        const { email } = req.body;
+        const { email, password } = req.body;
         // Revisar que el Usuario exista
         const user = await User.findOne({ where: { email } });
         if (!user) {
@@ -57,7 +57,10 @@ export class AuthController {
         if (!user.confirmed) {
             return res.status(403).json({ error: 'Tu cuenta no ha sido confirmada' });
         }
-        
-        res.json(user);
+        const isPasswordCorrect = await checkPassword(password, user.password);
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ error: 'Password Incorrecto' });
+        }
+        res.json(isPasswordCorrect);
     }
 }
