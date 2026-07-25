@@ -5,11 +5,16 @@ import Expense from "../models/Expense";
 export class BudgetController { 
     static getAllBudgets = async (req: Request, res: Response) => {
         try {
+            if (!req.user?.id) {
+                return res.status(401).json({ error: 'No autorizado' });
+            }
             const budget = await Budget.findAll({
                 order: [
                     ['createdAt', 'DESC']
                 ],
-                // TODO: Filtrar por el usuario autenticado
+                where: {
+                    userId: req.user.id
+                }
             });
             res.status(200).json(budget);
         } catch (error) {
