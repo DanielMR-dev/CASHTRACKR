@@ -133,6 +133,13 @@ export class AuthController {
         if (!isPasswordCorrect) {
             return res.status(401).json({ error: 'La contraseña actual es incorrecta' });
         }
-        res.json(user);
+        try {
+            user.password = await hashPassword(new_password);
+            await user.save();
+            res.status(200).json('Contraseña actualizada correctamente');
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Error al actualizar la contraseña' });
+        }
     }
 }
