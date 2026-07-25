@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import User from "../models/User";
 import { checkPassword, hashPassword } from "../utils/auth";
 import { generateToken } from "../utils/token";
@@ -117,6 +118,22 @@ export class AuthController {
     }
 
     static getUser = async (req: Request, res: Response) => {
-        res.json(req.headers.authorization);
+        const bearer = req.headers.authorization;
+        if (!bearer) {
+            return res.status(401).json({ error: 'No autorizado' });
+        }
+        const [ , token] = bearer.split(' ');
+        if (!token) {
+            return res.status(401).json({ error: 'Token no válido' });
+        }
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET no está definido');
+        }
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            res.json(decoded);
+        } catch (error) {
+            return res.status(500).json({ error: 'Token no válido' });
+        }
     }
 }
