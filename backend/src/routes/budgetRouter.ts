@@ -5,10 +5,17 @@ import { handleInputErrors } from "../middleware/validation";
 import { validateBudgetExists, validateBudgetId, validateBudgetInput } from "../middleware/budget";
 import { ExpensesController } from "../controllers/ExpenseController";
 import { validateExpenseExists, validateExpenseId, validateExpenseInput } from "../middleware/expense";
+import { authenticate } from "../middleware/auth";
 
 const router: Router = Router();
 
+
 /* Routes for Budgets */
+
+// Protect routes
+router.use(authenticate);
+
+// Validate params
 router.param('budgetId', validateBudgetId);
 router.param('budgetId', validateBudgetExists);
 

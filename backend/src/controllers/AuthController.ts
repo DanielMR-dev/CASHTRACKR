@@ -8,7 +8,7 @@ import { generateJWT } from "../utils/jwt";
 export class AuthController { 
     static createAccount = async (req: Request, res: Response) => {
         const { email, password } = req.body;
-        // Prevenir duplicados
+        // Prevent duplicates
         const userExists = await User.findOne({ where: { email } });
         if (userExists) {
             return res.status(409).json({ error: 'Un usuario con ese email ya existe' });
@@ -49,12 +49,12 @@ export class AuthController {
 
     static login = async (req: Request, res: Response) => {
         const { email, password } = req.body;
-        // Revisar que el Usuario exista
+        // Check if user exists
         const user = await User.findOne({ where: { email } });
         if (!user) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
-        // Revisar que la cuenta esté confirmada
+        // Check if account is confirmed
         if (!user.confirmed) {
             return res.status(403).json({ error: 'Tu cuenta no ha sido confirmada' });
         }
@@ -69,7 +69,7 @@ export class AuthController {
 
     static forgotPassword = async (req: Request, res: Response) => {
         const { email } = req.body;
-        // Revisar que el Usuario exista
+        // Check if user exists
         const user = await User.findOne({ where: { email } });
         if (!user) {
             return res.status(404).json({ error: 'Usuario no encontrado' });

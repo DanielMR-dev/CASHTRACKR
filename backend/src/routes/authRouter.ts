@@ -7,10 +7,13 @@ import { authenticate } from "../middleware/auth";
 
 const router: Router = Router();
 
-// Proteger todas las rutas de Auth con el limitador
+
+/* Routes for Auth */
+
+// Protect all routes 
 router.use(limiter);
 
-// Crear una Cuenta
+// Create Account
 router.post('/create-account',
     body('name')
         .notEmpty().withMessage('El nombre no puede ir vacío')
@@ -25,7 +28,7 @@ router.post('/create-account',
     AuthController.createAccount
 );
 
-// Confirmar Cuenta
+// Confirm Account
 router.post('/confirm-account',
     body('token')
         .notEmpty()
@@ -35,7 +38,7 @@ router.post('/confirm-account',
     AuthController.confirmAccount
 );
 
-// Iniciar Sesión
+// Login
 router.post('/login',
     body('email')
         .notEmpty().withMessage('El email es obligatorio')
@@ -46,7 +49,7 @@ router.post('/login',
     AuthController.login
 );
 
-// Olvidé mi contraseña
+// Forgot Password
 router.post('/forgot-password', 
     body('email')
         .notEmpty().withMessage('El email es obligatorio')
@@ -55,7 +58,7 @@ router.post('/forgot-password',
     AuthController.forgotPassword
 );
 
-// Validar Token
+// Validate Token
 router.post('/validate-token', 
     body('token')
         .notEmpty()
@@ -65,7 +68,7 @@ router.post('/validate-token',
     AuthController.validateToken
 );
 
-// Reestablecer Contraseña
+// Reset Password
 router.post('/reset-password/:token',
     param('token')
         .notEmpty()
@@ -78,13 +81,13 @@ router.post('/reset-password/:token',
     AuthController.resetPasswordWithToken
 );
 
-// Obtener el usuario
+// Get User
 router.get('/user', 
     authenticate,
     AuthController.getUser
 );
 
-// Cambiar Contraseña
+// Update Password
 router.post('/update-password', 
     authenticate,
     body('current_password')
@@ -96,7 +99,7 @@ router.post('/update-password',
     AuthController.updateCurrentUserPassword
 );
 
-// Verificar contraseña
+// Check Password
 router.post('/check-password', 
     authenticate,
     body('password')

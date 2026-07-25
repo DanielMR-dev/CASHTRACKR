@@ -21,6 +21,10 @@ export class BudgetController {
     static createBudget = async (req: Request, res: Response) => {
         try {
             const budget = new Budget(req.body);
+            if (!req.user?.id) {
+                return res.status(401).json({ error: 'No autorizado' });
+            }
+            budget.userId = req.user.id;    
             await budget.save();
             res.status(201).json({ message: 'Presupuesto Creado correctamente' });
         } catch (error) {
