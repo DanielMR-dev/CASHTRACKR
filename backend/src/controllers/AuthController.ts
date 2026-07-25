@@ -131,7 +131,16 @@ export class AuthController {
         }
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            res.json(decoded);
+            if (typeof decoded !== 'object' || !decoded.id) {
+                return res.status(401).json({ error: 'Token no válido' });
+            }
+            const user = await User.findByPk(decoded.id, {
+                attributes: ['id', 'name', 'email']
+            });
+            if (!user) {
+                return res.status(401).json({ error: 'Token no válido' });
+            }
+            res.status(200).json(user);
         } catch (error) {
             return res.status(500).json({ error: 'Token no válido' });
         }
