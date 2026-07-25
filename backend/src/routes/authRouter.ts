@@ -77,4 +77,7 @@ router.post('/reset-password/:token',
     AuthController.resetPasswordWithToken
 );
 
+// Obtener el usuario
+router.get('/user', AuthController.getUser);
+
 export default router;

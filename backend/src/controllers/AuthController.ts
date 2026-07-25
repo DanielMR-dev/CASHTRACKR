@@ -115,4 +115,8 @@ export class AuthController {
             res.status(500).json({ error: 'Error al restablecer la contraseña' });
         }
     }
+
+    static getUser = async (req: Request, res: Response) => {
+        res.json(req.headers.authorization);
+    }
 }
