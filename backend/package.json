@@ -11,7 +11,8 @@
     "dev:api": "tsx watch src/index.ts --api",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
-    "start": "node ./dist/index.js"
+    "start": "node ./dist/index.js",
+    "test": "jest"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -30,10 +31,13 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.13.3",
     "@types/nodemailer": "^8.0.1",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.12",
     "tsx": "^4.23.1",
     "typescript": "^7.0.2"
   }
