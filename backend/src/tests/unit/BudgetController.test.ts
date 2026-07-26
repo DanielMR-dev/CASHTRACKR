@@ -4,7 +4,8 @@ import { BudgetController } from "../../controllers/BudgetController";
 import Budget from "../../models/Budget";
 
 jest.mock('../../models/Budget', () => ({ 
-    findAll: jest.fn()
+    findAll: jest.fn(),
+    create: jest.fn()
 }));
 
 describe('BudgetController.getAll', () => {
@@ -72,5 +73,30 @@ describe('BudgetController.getAll', () => {
         await BudgetController.getAllBudgets(req, res);
         expect(res.statusCode).toBe(500);
         expect(res._getJSONData()).toStrictEqual({ error: 'Error al obtener los presupuestos' });
+    });
+});
+
+describe('BudgetController.createBudget', () => {
+    test('Should create a new budget and respond with statusCode 201', async () => {
+        const mockBudget = {
+            save: jest.fn().mockResolvedValue(true)
+        };
+        (Budget.create as jest.Mock).mockResolvedValue(mockBudget);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/budgets',
+            user: { id: 1 },
+            body: {
+                name: 'Nuevo Presupuesto',
+                amount: 1000
+            }
+        });
+        const res = createResponse();
+        await BudgetController.createBudget(req, res);
+        expect(res.statusCode).toBe(201);
+        expect(res._getJSONData()).toStrictEqual({ message: 'Presupuesto Creado correctamente' });
+        expect(mockBudget.save).toHaveBeenCalled();
+        expect(mockBudget.save).toHaveBeenCalledTimes(1);
+        expect(Budget.create).toHaveBeenCalledWith(req.body);
     });
 });
