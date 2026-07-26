@@ -37,6 +37,7 @@
     "@types/node": "^24.13.3",
     "@types/nodemailer": "^8.0.1",
     "jest": "^30.4.2",
+    "node-mocks-http": "^1.18.1",
     "ts-jest": "^29.4.12",
     "tsx": "^4.23.1",
     "typescript": "^6.0.3"
