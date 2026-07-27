@@ -146,7 +146,7 @@ describe('BudgetController.getBudgetById', () => {
     test('Should return a budget with ID 1 and 3 expenses', async () => {
         const req = createRequest({
             method: 'GET',
-            url: '/api/budgets/:id',
+            url: '/api/budgets/:budgetId',
             budget: { id: 1 }
         });
         const res = createResponse();
@@ -166,7 +166,7 @@ describe('BudgetController.getBudgetById', () => {
     test('Should return a budget with ID 2 and 2 expenses', async () => {
         const req = createRequest({
             method: 'GET',
-            url: '/api/budgets/:id',
+            url: '/api/budgets/:budgetId',
             budget: { id: 2 }
         });
         const res = createResponse();
@@ -181,7 +181,7 @@ describe('BudgetController.getBudgetById', () => {
     test('Should return a budget with ID 3 and 0 expenses', async () => {
         const req = createRequest({
             method: 'GET',
-            url: '/api/budgets/:id',
+            url: '/api/budgets/:budgetId',
             budget: { id: 3 }
         });
         const res = createResponse();
@@ -192,4 +192,31 @@ describe('BudgetController.getBudgetById', () => {
         expect(res.statusCode).not.toBe(404);
         expect(data.expenses).toHaveLength(0);
     });
+});
+
+describe('BudgetController.updateBudgetById', () => {
+    test('Should update the budget and return a success message and status code 200', async () => {
+        const mockBudget = {
+            update: jest.fn().mockResolvedValue(true)
+        };
+
+        const req = createRequest({
+            method: 'PUT',
+            url: '/api/budgets/:budgetId',
+            budget: mockBudget,
+            body: {
+                name: 'Presupuesto Actualizado',
+                amount: 2000
+            }
+        });
+        const res = createResponse();
+        await BudgetController.updateBudgetById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toStrictEqual({ message: 'Presupuesto actualizado correctamente' });
+        expect(mockBudget.update).toHaveBeenCalled();
+        expect(mockBudget.update).toHaveBeenCalledTimes(1);
+        expect(mockBudget.update).toHaveBeenCalledWith(req.body);
+    }); 
 });
