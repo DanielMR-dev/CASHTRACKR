@@ -33,10 +33,15 @@ export class BudgetController {
     }
     
     static getBudgetById = async (req: Request, res: Response) => {
-        const budget = await Budget.findByPk(req.budget!.id, {
-            include: [Expense]
-        });
-        res.status(200).json(budget);
+        try {
+            const budget = await Budget.findByPk(req.budget!.id, {
+                include: [Expense]
+            });
+            res.status(200).json(budget);
+        } catch (error) {
+            // console.log(error);
+            res.status(500).json({ error: 'Error al obtener el presupuesto' });
+        }
     }
 
     static updateBudgetById = async (req: Request, res: Response) => {
@@ -44,6 +49,7 @@ export class BudgetController {
             await req.budget!.update(req.body);
             res.status(200).json({ message: 'Presupuesto actualizado correctamente' });
         } catch (error) {
+            // console.log(error);
             res.status(500).json({ error: 'Error al actualizar el presupuesto' });
         }
     }
