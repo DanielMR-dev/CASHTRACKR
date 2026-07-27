@@ -36,7 +36,7 @@ export const validateBudgetExists = async (req: Request, res: Response, next: Ne
         next();
     } catch (error) {
         //console.log(error);
-        res.status(500).json({ error: 'Error al actualizar el presupuesto' });
+        res.status(500).json({ error: 'Hubo un error al obtener el presupuesto' });
     };
 };
 
