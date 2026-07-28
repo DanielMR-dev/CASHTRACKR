@@ -14,7 +14,7 @@ export class AuthController {
             return res.status(409).json({ error: 'Un usuario con ese email ya existe' });
         }
         try {
-            const user = new User(req.body);
+            const user = await User.create(req.body);
             user.password = await hashPassword(password);
             user.token = generateToken();
             await user.save();
