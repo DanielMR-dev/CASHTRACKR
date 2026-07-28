@@ -1,6 +1,7 @@
 import { createRequest, createResponse } from "node-mocks-http";
 import Expense from "../../../models/Expense";
 import { ExpensesController } from "../../../controllers/ExpenseController";
+import { expenses } from "../../mocks/expenses";
 
 jest.mock('../../../models/Expense', () => ({
     create: jest.fn()
@@ -54,5 +55,49 @@ describe('ExpensesController.createExpense', () => {
         expect(data).toStrictEqual({ error: 'Error al Crear el gasto' });
         expect(mockExpense.save).not.toHaveBeenCalled();
         expect(Expense.create).toHaveBeenCalledWith(req.body);
+    });
+});
+
+describe('ExpensesController.getExpenseById', () => {
+    test('Should return expense with ID 1', async () => {
+        const req = createRequest({
+            method: 'GET',
+            url: '/api/budgets/:budgetId/expenses/:expenseId',
+            expense: expenses[0]
+        });
+        const res = createResponse();
+        await ExpensesController.getExpenseById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toStrictEqual(expenses[0]);
+    });
+
+    test('Should return expense with ID 2', async () => {
+        const req = createRequest({
+            method: 'GET',
+            url: '/api/budgets/:budgetId/expenses/:expenseId',
+            expense: expenses[1]
+        });
+        const res = createResponse();
+        await ExpensesController.getExpenseById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toStrictEqual(expenses[1]);
+    });
+
+    test('Should return expense with ID 3', async () => {
+        const req = createRequest({
+            method: 'GET',
+            url: '/api/budgets/:budgetId/expenses/:expenseId',
+            expense: expenses[2]
+        });
+        const res = createResponse();
+        await ExpensesController.getExpenseById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toStrictEqual(expenses[2]);
     });
 });
