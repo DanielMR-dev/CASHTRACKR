@@ -1,7 +1,7 @@
 import { createRequest, createResponse } from "node-mocks-http";
 import { AuthController } from "../../../controllers/AuthController";
 import User from "../../../models/User";
-import { hashPassword } from "../../../utils/auth";
+import { checkPassword, hashPassword } from "../../../utils/auth";
 import { generateToken } from "../../../utils/token";
 import { AuthEmail } from "../../../emails/AuthEmail";
 
@@ -136,13 +136,14 @@ describe('AuthController.login', () => {
     });
 
     test('Should return 403 status error if account is not confirmed', async () => {
-        (User.findOne as jest.Mock).mockResolvedValue({
+        const mockUser = {
             id: 1,
             name: 'Test Name',
             email: 'test@test.com',
             password: 'testpassword',
             confirmed: false
-        });
+        };
+        (User.findOne as jest.Mock).mockResolvedValue(mockUser);
         const req = createRequest({
             method: 'POST',
             url: '/api/auth/login',
@@ -159,5 +160,36 @@ describe('AuthController.login', () => {
         expect(data).toHaveProperty('error', 'Tu cuenta no ha sido confirmada');
         expect(User.findOne).toHaveBeenCalled();
         expect(User.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should return 401 status error if password is incorrect', async () => {
+        const mockUser = {
+            id: 1,
+            name: 'Test Name',
+            email: 'test@test.com',
+            password: 'testpassword',
+            confirmed: true
+        };
+        (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/login',
+            body: {
+                email: 'test@test.com',
+                password: 'wrongpassword'
+            }
+        });
+        const res = createResponse();
+        (checkPassword as jest.Mock).mockResolvedValue(false);
+        await AuthController.login(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(401);
+        expect(data).toHaveProperty('error', 'Password Incorrecto');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalled();
+        expect(checkPassword).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalledWith(req.body.password, mockUser.password);
     });
 });
