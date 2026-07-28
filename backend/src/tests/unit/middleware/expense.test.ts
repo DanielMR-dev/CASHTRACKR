@@ -31,4 +31,19 @@ describe('Expenses Middleware - validateExpenseExists', () => {
         expect(data).toStrictEqual({ error: 'Gasto no encontrado' });
         expect(next).not.toHaveBeenCalled();
     });
+
+    test('Should call next middleware if expense exists', async () => {
+        const req = createRequest({
+            params: {
+                expenseId: 1
+            }
+        });
+        const res = createResponse();
+        const next = jest.fn();
+        await validateExpenseExists(req, res, next);
+        
+        expect(next).toHaveBeenCalled();
+        expect(next).toHaveBeenCalledTimes(1);
+        expect(req.expense).toStrictEqual(expenses[0]);
+    });
 });
