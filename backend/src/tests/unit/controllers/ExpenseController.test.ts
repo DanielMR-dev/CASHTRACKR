@@ -31,4 +31,28 @@ describe('ExpensesController.createExpense', () => {
         expect(mockExpense.save).toHaveBeenCalledTimes(1);
         expect(Expense.create).toHaveBeenCalledWith(req.body);
     });
+
+    test('Should handle expense creation error', async () => {
+        const mockExpense = {
+            save: jest.fn()
+        };
+        (Expense.create as jest.Mock).mockRejectedValue(new Error());
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/budgets/:budgetId/expenses',
+            budget: { id: 1 },
+            body: {
+                name: 'Nuevo Presupuesto',
+                amount: 1000
+            }
+        });
+        const res = createResponse();
+        await ExpensesController.createExpense(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toStrictEqual({ error: 'Error al Crear el gasto' });
+        expect(mockExpense.save).not.toHaveBeenCalled();
+        expect(Expense.create).toHaveBeenCalledWith(req.body);
+    });
 });

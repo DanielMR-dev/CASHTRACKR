@@ -111,7 +111,7 @@ describe('BudgetController.createBudget', () => {
         const mockBudget = {
             save: jest.fn()
         };
-        (Budget.create as jest.Mock).mockRejectedValueOnce(new Error());
+        (Budget.create as jest.Mock).mockRejectedValue(new Error());
         const req = createRequest({
             method: 'POST',
             url: '/api/budgets',
@@ -204,7 +204,7 @@ describe('BudgetController.getBudgetById', () => {
     });
 
     test('Should handle budget fetch error', async () => {
-        (Budget.findByPk as jest.Mock).mockRejectedValueOnce(new Error());
+        (Budget.findByPk as jest.Mock).mockRejectedValue(new Error());
         const req = createRequest({
             method: 'GET',
             url: '/api/budgets/:budgetId',
@@ -250,7 +250,7 @@ describe('BudgetController.updateBudgetById', () => {
 
     test('Should handle budget update error', async () => {
         const mockBudget = {
-            update: jest.fn().mockRejectedValueOnce(new Error())
+            update: jest.fn().mockRejectedValue(new Error())
         };
         const req = createRequest({
             method: 'PUT',
@@ -292,7 +292,7 @@ describe('BudgetController.deleteBudgetById', () => {
 
     test('Should handle budget delete error', async () => {
         const mockBudget = {
-            destroy: jest.fn().mockRejectedValueOnce(new Error())
+            destroy: jest.fn().mockRejectedValue(new Error())
         };
         const req = createRequest({
             method: 'DELETE',
