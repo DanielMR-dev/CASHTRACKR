@@ -51,10 +51,12 @@ describe('AuthController.createAccount', () => {
             ...req.body,
             save: jest.fn()
         };
+        const hashed_password = 'hashed_password';
+        const token = '123456';
 
         (User.create as jest.Mock).mockResolvedValue(userMock);
-        (hashPassword as jest.Mock).mockResolvedValue('hashed_password');
-        (generateToken as jest.Mock).mockReturnValue('123456'); // For sync functions mockReturnValue 
+        (hashPassword as jest.Mock).mockResolvedValue(hashed_password);
+        (generateToken as jest.Mock).mockReturnValue(token); // For sync functions mockReturnValue 
         jest.spyOn(AuthEmail, 'sendConfirmationEmail').mockImplementation(() => Promise.resolve());
     
         await AuthController.createAccount(req, res);
@@ -62,6 +64,25 @@ describe('AuthController.createAccount', () => {
 
         expect(res.statusCode).toBe(201);
         expect(data).toHaveProperty('message', '¡Tu cuenta ha sido creada correctamente!');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.create).toHaveBeenCalled();
+        expect(User.create).toHaveBeenCalledWith(req.body);
+        expect(User.create).toHaveBeenCalledTimes(1);
+        expect(userMock.save).toHaveBeenCalled();
+        expect(userMock.save).toHaveBeenCalledTimes(1);
+        expect(userMock.password).toBe(hashed_password);
+        expect(userMock.token).toBe(token);
+        expect(hashPassword).toHaveBeenCalled();
+        expect(hashPassword).toHaveBeenCalledTimes(1);
+        expect(generateToken).toHaveBeenCalled();
+        expect(generateToken).toHaveBeenCalledTimes(1);
+        expect(AuthEmail.sendConfirmationEmail).toHaveBeenCalled();
+        expect(AuthEmail.sendConfirmationEmail).toHaveBeenCalledTimes(1);
+        expect(AuthEmail.sendConfirmationEmail).toHaveBeenCalledWith({
+            name: userMock.name,
+            email: userMock.email,
+            token: token
+        });
     })
     
 });
