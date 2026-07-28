@@ -4,10 +4,12 @@ import User from "../../../models/User";
 import { checkPassword, hashPassword } from "../../../utils/auth";
 import { generateToken } from "../../../utils/token";
 import { AuthEmail } from "../../../emails/AuthEmail";
+import { generateJWT } from "../../../utils/jwt";
 
 jest.mock('../../../models/User');
 jest.mock('../../../utils/auth');
 jest.mock('../../../utils/token');
+jest.mock('../../../utils/jwt');
 
 describe('AuthController.createAccount', () => {
 
@@ -47,14 +49,14 @@ describe('AuthController.createAccount', () => {
             }
         });
         const res = createResponse();
-        const userMock = {
+        const mockUser = {
             ...req.body,
             save: jest.fn()
         };
         const hashed_password = 'hashed_password';
         const token = '123456';
 
-        (User.create as jest.Mock).mockResolvedValue(userMock);
+        (User.create as jest.Mock).mockResolvedValue(mockUser);
         (hashPassword as jest.Mock).mockResolvedValue(hashed_password);
         (generateToken as jest.Mock).mockReturnValue(token); // For sync functions mockReturnValue 
         jest.spyOn(AuthEmail, 'sendConfirmationEmail').mockImplementation(() => Promise.resolve());
@@ -68,10 +70,10 @@ describe('AuthController.createAccount', () => {
         expect(User.create).toHaveBeenCalled();
         expect(User.create).toHaveBeenCalledWith(req.body);
         expect(User.create).toHaveBeenCalledTimes(1);
-        expect(userMock.save).toHaveBeenCalled();
-        expect(userMock.save).toHaveBeenCalledTimes(1);
-        expect(userMock.password).toBe(hashed_password);
-        expect(userMock.token).toBe(token);
+        expect(mockUser.save).toHaveBeenCalled();
+        expect(mockUser.save).toHaveBeenCalledTimes(1);
+        expect(mockUser.password).toBe(hashed_password);
+        expect(mockUser.token).toBe(token);
         expect(hashPassword).toHaveBeenCalled();
         expect(hashPassword).toHaveBeenCalledTimes(1);
         expect(generateToken).toHaveBeenCalled();
@@ -79,8 +81,8 @@ describe('AuthController.createAccount', () => {
         expect(AuthEmail.sendConfirmationEmail).toHaveBeenCalled();
         expect(AuthEmail.sendConfirmationEmail).toHaveBeenCalledTimes(1);
         expect(AuthEmail.sendConfirmationEmail).toHaveBeenCalledWith({
-            name: userMock.name,
-            email: userMock.email,
+            name: mockUser.name,
+            email: mockUser.email,
             token: token
         });
     });
@@ -191,5 +193,41 @@ describe('AuthController.login', () => {
         expect(checkPassword).toHaveBeenCalled();
         expect(checkPassword).toHaveBeenCalledTimes(1);
         expect(checkPassword).toHaveBeenCalledWith(req.body.password, mockUser.password);
+    });
+
+    test('Should return 200 status and JWT token if credentials are correct', async () => {
+        const mockUser = {
+            id: 1,
+            name: 'Test Name',
+            email: 'test@test.com',
+            password: 'testpassword',
+            confirmed: true
+        };
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/login',
+            body: {
+                email: 'test@test.com',
+                password: 'testpassword'
+            }
+        });
+        const res = createResponse();
+        const fakejwt = 'fakejwt';
+        (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+        (checkPassword as jest.Mock).mockResolvedValue(true);
+        (generateJWT as jest.Mock).mockReturnValue(fakejwt);
+        await AuthController.login(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toStrictEqual(fakejwt);
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalled();
+        expect(checkPassword).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalledWith(req.body.password, mockUser.password);
+        expect(generateJWT).toHaveBeenCalled();
+        expect(generateJWT).toHaveBeenCalledTimes(1);
+        expect(generateJWT).toHaveBeenCalledWith(mockUser.id);
     });
 });
