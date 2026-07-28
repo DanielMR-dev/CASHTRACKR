@@ -114,7 +114,7 @@ describe('AuthController.login', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
-    
+
     test('Should return 404 status error if user does not exist', async () => {
         (User.findOne as jest.Mock).mockResolvedValue(null);
         const req = createRequest({
@@ -131,6 +131,32 @@ describe('AuthController.login', () => {
 
         expect(res.statusCode).toBe(404);
         expect(data).toHaveProperty('error', 'Usuario no encontrado');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should return 403 status error if account is not confirmed', async () => {
+        (User.findOne as jest.Mock).mockResolvedValue({
+            id: 1,
+            name: 'Test Name',
+            email: 'test@test.com',
+            password: 'testpassword',
+            confirmed: false
+        });
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/login',
+            body: {
+                email: 'test@test.com',
+                password: 'testpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.login(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(403);
+        expect(data).toHaveProperty('error', 'Tu cuenta no ha sido confirmada');
         expect(User.findOne).toHaveBeenCalled();
         expect(User.findOne).toHaveBeenCalledTimes(1);
     });
