@@ -101,3 +101,70 @@ describe('ExpensesController.getExpenseById', () => {
         expect(data).toStrictEqual(expenses[2]);
     });
 });
+
+describe('ExpensesController.updateExpenseById', () => {
+    test('Should update an expense', async () => {
+        const mockExpense = {
+            ...expenses[0],
+            update: jest.fn().mockResolvedValue(true)
+        };
+        const req = createRequest({
+            method: 'PUT',
+            url: '/api/budgets/:budgetId/expenses/:expenseId',
+            expense: mockExpense,
+            body: {
+                name: 'Updated Expense',
+                amount: 200
+            }
+        });
+        const res = createResponse();
+        await ExpensesController.updateExpenseById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toStrictEqual({ message: 'Gasto actualizado correctamente' });
+        expect(mockExpense.update).toHaveBeenCalledWith(req.body);
+        expect(mockExpense.update).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should handle expense update error', async () => {
+        const mockExpense = {
+            ...expenses[0],
+            update: jest.fn().mockRejectedValue(new Error())
+        };
+        const req = createRequest({
+            method: 'PUT',
+            url: '/api/budgets/:budgetId/expenses/:expenseId',
+            expense: mockExpense,
+            body: {
+                name: 'Updated Expense',
+                amount: 200
+            }
+        });
+        const res = createResponse();
+        await ExpensesController.updateExpenseById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toStrictEqual({ error: 'Error al actualizar el gasto' });
+        expect(mockExpense.update).toHaveBeenCalledWith(req.body);
+        expect(mockExpense.update).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should return 500 error if expense is not present in request', async () => {
+        const req = createRequest({
+            method: 'PUT',
+            url: '/api/budgets/:budgetId/expenses/:expenseId',
+            body: {
+                name: 'Updated Expense',
+                amount: 200
+            }
+        });
+        const res = createResponse();
+        await ExpensesController.updateExpenseById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toStrictEqual({ error: 'Error interno: Gasto no disponible' });
+    });
+});
