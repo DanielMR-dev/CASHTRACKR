@@ -123,6 +123,7 @@ describe('ExpensesController.updateExpenseById', () => {
 
         expect(res.statusCode).toBe(200);
         expect(data).toStrictEqual({ message: 'Gasto actualizado correctamente' });
+        expect(mockExpense.update).toHaveBeenCalled();
         expect(mockExpense.update).toHaveBeenCalledWith(req.body);
         expect(mockExpense.update).toHaveBeenCalledTimes(1);
     });
@@ -147,6 +148,7 @@ describe('ExpensesController.updateExpenseById', () => {
 
         expect(res.statusCode).toBe(500);
         expect(data).toStrictEqual({ error: 'Error al actualizar el gasto' });
+        expect(mockExpense.update).toHaveBeenCalled();
         expect(mockExpense.update).toHaveBeenCalledWith(req.body);
         expect(mockExpense.update).toHaveBeenCalledTimes(1);
     });
@@ -162,6 +164,61 @@ describe('ExpensesController.updateExpenseById', () => {
         });
         const res = createResponse();
         await ExpensesController.updateExpenseById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toStrictEqual({ error: 'Error interno: Gasto no disponible' });
+    });
+});
+
+describe('ExpensesController.deleteExpenseById', () => {
+    test('Should delete an expense', async () => {
+        const mockExpense = {
+            ...expenses[0],
+            destroy: jest.fn().mockResolvedValue(true)
+        };
+        const req = createRequest({
+            method: 'DELETE',
+            url: '/api/budgets/:budgetId/expenses/:expenseId',
+            expense: mockExpense
+        });
+        const res = createResponse();
+        await ExpensesController.deleteExpenseById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toStrictEqual({ message: 'Gasto eliminado correctamente' });
+        expect(mockExpense.destroy).toHaveBeenCalled();
+        expect(mockExpense.destroy).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should handle expense deletion error', async () => {
+        const mockExpense = {
+            ...expenses[0],
+            destroy: jest.fn().mockRejectedValue(new Error())
+        };
+        const req = createRequest({
+            method: 'DELETE',
+            url: '/api/budgets/:budgetId/expenses/:expenseId',
+            expense: mockExpense
+        });
+        const res = createResponse();
+        await ExpensesController.deleteExpenseById(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toStrictEqual({ error: 'Error al eliminar el gasto' });
+        expect(mockExpense.destroy).toHaveBeenCalled();
+        expect(mockExpense.destroy).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should return 500 error if expense is not present in request', async () => {
+        const req = createRequest({
+            method: 'DELETE',
+            url: '/api/budgets/:budgetId/expenses/:expenseId'
+        });
+        const res = createResponse();
+        await ExpensesController.deleteExpenseById(req, res);
         const data = res._getJSONData();
 
         expect(res.statusCode).toBe(500);
