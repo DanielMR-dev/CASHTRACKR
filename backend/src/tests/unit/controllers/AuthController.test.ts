@@ -13,7 +13,7 @@ describe('AuthController.createAccount', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-    })
+    });
 
     test('Should return a 409 status and error message if the email is already registered', async () => {
         (User.findOne as jest.Mock).mockResolvedValue(true);
@@ -98,7 +98,6 @@ describe('AuthController.createAccount', () => {
             }
         });
         const res = createResponse();
-
         await AuthController.createAccount(req, res);
         const data = res._getJSONData();
 
@@ -107,5 +106,32 @@ describe('AuthController.createAccount', () => {
         expect(User.findOne).toHaveBeenCalled();
         expect(User.findOne).toHaveBeenCalledTimes(1);
         expect(User.create).toHaveBeenCalledWith(req.body);
+    });
+});
+
+describe('AuthController.login', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    
+    test('Should return 404 status error if user does not exist', async () => {
+        (User.findOne as jest.Mock).mockResolvedValue(null);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/login',
+            body: {
+                email: 'test@test.com',
+                password: 'testpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.login(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(404);
+        expect(data).toHaveProperty('error', 'Usuario no encontrado');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
     });
 });
