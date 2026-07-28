@@ -46,4 +46,21 @@ describe('Expenses Middleware - validateExpenseExists', () => {
         expect(next).toHaveBeenCalledTimes(1);
         expect(req.expense).toStrictEqual(expenses[0]);
     });
+
+    test('Should handle internal server error', async () => {
+        (Expense.findByPk as jest.Mock).mockRejectedValue(new Error());
+        const req = createRequest({
+            params: {
+                expenseId: 1
+            }
+        });
+        const res = createResponse();
+        const next = jest.fn();
+        await validateExpenseExists(req, res, next);
+        const data = res._getJSONData();
+
+        expect(next).not.toHaveBeenCalled();
+        expect(res.statusCode).toBe(500);
+        expect(data).toStrictEqual({ error: 'Error al actualizar el gasto' });    
+    });
 });
