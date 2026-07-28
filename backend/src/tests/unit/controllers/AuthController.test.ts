@@ -83,6 +83,29 @@ describe('AuthController.createAccount', () => {
             email: userMock.email,
             token: token
         });
-    })
-    
+    });
+
+    test('Should handle user creation error', async () => {
+        (User.findOne as jest.Mock).mockResolvedValue(null);
+        (User.create as jest.Mock).mockRejectedValue(new Error());
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/create-account',
+            body: {
+                email: 'test@test.com',
+                password: 'testpassword',
+                name: 'Test Name'
+            }
+        });
+        const res = createResponse();
+
+        await AuthController.createAccount(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toHaveProperty('error', 'Error al crear la cuenta');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(User.create).toHaveBeenCalledWith(req.body);
+    });
 });
