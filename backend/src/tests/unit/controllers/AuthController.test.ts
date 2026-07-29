@@ -321,3 +321,105 @@ describe('AuthController.login', () => {
         expect(generateJWT).toHaveBeenCalledWith(mockUser.id);
     });
 });
+
+describe('AuthController.forgotPassword', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('Should return 404 status error if user does not exist', async () => {
+        (User.findOne as jest.Mock).mockResolvedValue(null);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/forgot-password',
+            body: {
+                email: 'test@test.com'
+            }
+        });
+        const res = createResponse();
+        await AuthController.forgotPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(404);
+        expect(data).toHaveProperty('error', 'Usuario no encontrado');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(User.findOne).toHaveBeenCalledWith({ where: { email: req.body.email } });
+    });
+
+    test('Should send password reset token and return success message', async () => {
+        const mockUser = {
+            id: 1,
+            name: 'Test Name',
+            email: 'test@test.com',
+            token: '',
+            save: jest.fn().mockResolvedValue(true)
+        };
+        const token = '123456';
+        (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+        (generateToken as jest.Mock).mockReturnValue(token);
+        jest.spyOn(AuthEmail, 'sendPasswordResetToken').mockImplementation(() => Promise.resolve());
+
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/forgot-password',
+            body: {
+                email: 'test@test.com'
+            }
+        });
+        const res = createResponse();
+        await AuthController.forgotPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toHaveProperty('message', 'Se ha enviado un correo con las instrucciones para restablecer tu contraseña');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(User.findOne).toHaveBeenCalledWith({ where: { email: req.body.email } });
+        expect(generateToken).toHaveBeenCalled();
+        expect(generateToken).toHaveBeenCalledTimes(1);
+        expect(mockUser.token).toBe(token);
+        expect(mockUser.save).toHaveBeenCalled();
+        expect(mockUser.save).toHaveBeenCalledTimes(1);
+        expect(AuthEmail.sendPasswordResetToken).toHaveBeenCalled();
+        expect(AuthEmail.sendPasswordResetToken).toHaveBeenCalledTimes(1);
+        expect(AuthEmail.sendPasswordResetToken).toHaveBeenCalledWith({
+            name: mockUser.name,
+            email: mockUser.email,
+            token: token
+        });
+    });
+
+    test('Should handle forgot password error', async () => {
+        const mockUser = {
+            id: 1,
+            name: 'Test Name',
+            email: 'test@test.com',
+            token: '',
+            save: jest.fn().mockRejectedValue(new Error())
+        };
+        (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+        (generateToken as jest.Mock).mockReturnValue('123456');
+
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/forgot-password',
+            body: {
+                email: 'test@test.com'
+            }
+        });
+        const res = createResponse();
+        jest.spyOn(console, 'log').mockImplementation(() => {});
+
+        await AuthController.forgotPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toHaveProperty('error', 'Error al restablecer la contraseña');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(mockUser.save).toHaveBeenCalled();
+        expect(mockUser.save).toHaveBeenCalledTimes(1);
+    });
+});
