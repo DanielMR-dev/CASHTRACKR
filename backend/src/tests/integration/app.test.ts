@@ -27,4 +27,22 @@ describe('Authentication - Create Account', () => {
         expect(response.statusCode).not.toBe(201);
         expect(mockCreateAccount).not.toHaveBeenCalled();
     });
+
+    test('Should 400 error when the email is invalid', async () => {
+        const response = await request(server)
+                                    .post('/api/auth/create-account')
+                                    .send({
+                                        name : "Test name",
+                                        password : "test_password",
+                                        email : "not_valid_email"
+                                    });
+        const mockCreateAccount = jest.spyOn(AuthController, 'createAccount');
+        const data = response.body;
+
+        expect(response.statusCode).toBe(400);
+        expect(data).toHaveProperty('errors');
+        expect(data.errors).toHaveLength(1);
+        expect(response.statusCode).not.toBe(201);
+        expect(mockCreateAccount).not.toHaveBeenCalled();
+    });
 });
