@@ -2,6 +2,8 @@ import request from 'supertest';
 import server from '../../server';
 import { connectDB } from '../../server';
 import { db } from '../../config/db';
+import { AuthController } from '../../controllers/AuthController';
+import { not } from 'supertest/lib/cookies';
 
 describe('Authentication - Create Account', () => {
     beforeAll(async () => {
@@ -16,12 +18,13 @@ describe('Authentication - Create Account', () => {
         const response = await request(server)
                                     .post('/api/auth/create-account')
                                     .send({});
-
+        const mockCreateAccount = jest.spyOn(AuthController, 'createAccount');
         const data = response.body;
 
         expect(response.statusCode).toBe(400);
         expect(data).toHaveProperty('errors');
         expect(data.errors).toHaveLength(3);
         expect(response.statusCode).not.toBe(201);
+        expect(mockCreateAccount).not.toHaveBeenCalled();
     });
 });
