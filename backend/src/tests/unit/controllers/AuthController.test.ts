@@ -737,3 +737,101 @@ describe('AuthController.updateCurrentUserPassword', () => {
         expect(mockUser.save).toHaveBeenCalledTimes(1);
     });
 });
+
+describe('AuthController.checkPassword', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('Should return 401 status error if user is not present in request', async () => {
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/check-password',
+            body: {
+                password: 'testpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.checkPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(401);
+        expect(data).toHaveProperty('error', 'No autorizado');
+    });
+
+    test('Should return 404 status error if user is not found in database', async () => {
+        (User.findByPk as jest.Mock).mockResolvedValue(null);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/check-password',
+            user: { id: 1 },
+            body: {
+                password: 'testpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.checkPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(404);
+        expect(data).toHaveProperty('error', 'Usuario no encontrado');
+        expect(User.findByPk).toHaveBeenCalled();
+        expect(User.findByPk).toHaveBeenCalledTimes(1);
+        expect(User.findByPk).toHaveBeenCalledWith(req.user!.id);
+    });
+
+    test('Should return 401 status error if password is incorrect', async () => {
+        const mockUser = {
+            id: 1,
+            password: 'hashed_password'
+        };
+        (User.findByPk as jest.Mock).mockResolvedValue(mockUser);
+        (checkPassword as jest.Mock).mockResolvedValue(false);
+
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/check-password',
+            user: { id: 1 },
+            body: {
+                password: 'wrongpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.checkPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(401);
+        expect(data).toHaveProperty('error', 'La contraseña es incorrecta');
+        expect(User.findByPk).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalled();
+        expect(checkPassword).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalledWith(req.body.password, mockUser.password);
+    });
+
+    test('Should return 200 status and success message if password is correct', async () => {
+        const mockUser = {
+            id: 1,
+            password: 'hashed_password'
+        };
+        (User.findByPk as jest.Mock).mockResolvedValue(mockUser);
+        (checkPassword as jest.Mock).mockResolvedValue(true);
+
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/check-password',
+            user: { id: 1 },
+            body: {
+                password: 'correctpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.checkPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toBe('Contraseña correcta');
+        expect(User.findByPk).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalledWith(req.body.password, mockUser.password);
+    });
+});
