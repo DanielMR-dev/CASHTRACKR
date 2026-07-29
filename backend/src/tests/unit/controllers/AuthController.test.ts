@@ -470,3 +470,104 @@ describe('AuthController.validateToken', () => {
         expect(User.findOne).toHaveBeenCalledWith({ where: { token: req.body.token } });
     });
 });
+
+describe('AuthController.resetPasswordWithToken', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('Should return 404 status error if token does not exist', async () => {
+        (User.findOne as jest.Mock).mockResolvedValue(null);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/reset-password/:token',
+            params: {
+                token: 'invalid_token'
+            },
+            body: {
+                password: 'newpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.resetPasswordWithToken(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(404);
+        expect(data).toHaveProperty('error', 'Token no válido');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(User.findOne).toHaveBeenCalledWith({ where: { token: req.params.token } });
+    });
+
+    test('Should reset password and return success message', async () => {
+        const mockUser = {
+            id: 1,
+            password: 'oldpassword',
+            token: '123456',
+            save: jest.fn().mockResolvedValue(true)
+        };
+        const hashed_password = 'hashed_new_password';
+        (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+        (hashPassword as jest.Mock).mockResolvedValue(hashed_password);
+
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/reset-password/:token',
+            params: {
+                token: '123456'
+            },
+            body: {
+                password: 'newpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.resetPasswordWithToken(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toHaveProperty('message', 'Contraseña restablecida correctamente');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(User.findOne).toHaveBeenCalledWith({ where: { token: req.params.token } });
+        expect(hashPassword).toHaveBeenCalled();
+        expect(hashPassword).toHaveBeenCalledTimes(1);
+        expect(hashPassword).toHaveBeenCalledWith(req.body.password);
+        expect(mockUser.password).toBe(hashed_password);
+        expect(mockUser.token).toBeNull();
+        expect(mockUser.save).toHaveBeenCalled();
+        expect(mockUser.save).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should handle error when resetting password', async () => {
+        const mockUser = {
+            id: 1,
+            password: 'oldpassword',
+            token: '123456',
+            save: jest.fn().mockRejectedValue(new Error())
+        };
+        (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+        (hashPassword as jest.Mock).mockResolvedValue('hashed_password');
+
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/reset-password/:token',
+            params: {
+                token: '123456'
+            },
+            body: {
+                password: 'newpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.resetPasswordWithToken(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toHaveProperty('error', 'Error al restablecer la contraseña');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(mockUser.save).toHaveBeenCalled();
+        expect(mockUser.save).toHaveBeenCalledTimes(1);
+    });
+});
