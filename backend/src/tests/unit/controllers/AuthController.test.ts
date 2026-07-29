@@ -111,6 +111,96 @@ describe('AuthController.createAccount', () => {
     });
 });
 
+describe('AuthController.confirmAccount', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('Should return 401 status error if token is not valid', async () => {
+        (User.findOne as jest.Mock).mockResolvedValue(null);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/confirm-account',
+            body: {
+                token: 'invalid_token'
+            }
+        });
+        const res = createResponse();
+        await AuthController.confirmAccount(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(401);
+        expect(data).toHaveProperty('error', 'Token no válido');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(User.findOne).toHaveBeenCalledWith({ where: { token: req.body.token } });
+    });
+
+    test('Should confirm account and return success message', async () => {
+        const mockUser = {
+            id: 1,
+            name: 'Test Name',
+            email: 'test@test.com',
+            confirmed: false,
+            token: '123456',
+            save: jest.fn().mockResolvedValue(true)
+        };
+        (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/confirm-account',
+            body: {
+                token: '123456'
+            }
+        });
+        const res = createResponse();
+        await AuthController.confirmAccount(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(201);
+        expect(data).toHaveProperty('message', '¡Tu cuenta ha sido confirmada correctamente!');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(User.findOne).toHaveBeenCalledWith({ where: { token: req.body.token } });
+        expect(mockUser.confirmed).toBe(true);
+        expect(mockUser.token).toBeNull();
+        expect(mockUser.save).toHaveBeenCalled();
+        expect(mockUser.save).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should handle account confirmation error', async () => {
+        const mockUser = {
+            id: 1,
+            name: 'Test Name',
+            email: 'test@test.com',
+            confirmed: false,
+            token: '123456',
+            save: jest.fn().mockRejectedValue(new Error())
+        };
+        (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/confirm-account',
+            body: {
+                token: '123456'
+            }
+        });
+        const res = createResponse();
+        jest.spyOn(console, 'log').mockImplementation(() => {});
+
+        await AuthController.confirmAccount(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toHaveProperty('error', 'Error al confirmar la cuenta');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(mockUser.save).toHaveBeenCalled();
+        expect(mockUser.save).toHaveBeenCalledTimes(1);
+    });
+});
+
 describe('AuthController.login', () => {
 
     beforeEach(() => {
