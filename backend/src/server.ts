@@ -8,10 +8,10 @@ import authRouter from './routes/authRouter';
 export async function connectDB () {
     try {
         await db.authenticate();
-        db.sync();
-        console.log(colors.blue.bold('Base de datos conectada'));
+        await db.sync();
+        // console.log(colors.blue.bold('Base de datos conectada'));
     } catch (error) {
-        console.log(colors.red.bold('No se pudo conectar a la base de datos'));
+        // console.log(colors.red.bold('No se pudo conectar a la base de datos'));
         process.exit(1); // Detiene el proceso
     }
 };
