@@ -571,3 +571,29 @@ describe('AuthController.resetPasswordWithToken', () => {
         expect(mockUser.save).toHaveBeenCalledTimes(1);
     });
 });
+
+describe('AuthController.getUser', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('Should return authenticated user information and status code 200', async () => {
+        const mockUser = {
+            id: 1,
+            name: 'Test Name',
+            email: 'test@test.com'
+        };
+        const req = createRequest({
+            method: 'GET',
+            url: '/api/auth/user',
+            user: mockUser
+        });
+        const res = createResponse();
+        await AuthController.getUser(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toStrictEqual(mockUser);
+    });
+});
