@@ -423,3 +423,50 @@ describe('AuthController.forgotPassword', () => {
         expect(mockUser.save).toHaveBeenCalledTimes(1);
     });
 });
+
+describe('AuthController.validateToken', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('Should return 404 status error if token does not exist', async () => {
+        (User.findOne as jest.Mock).mockResolvedValue(null);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/validate-token',
+            body: {
+                token: 'invalid_token'
+            }
+        });
+        const res = createResponse();
+        await AuthController.validateToken(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(404);
+        expect(data).toHaveProperty('error', 'Token no válido');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(User.findOne).toHaveBeenCalledWith({ where: { token: req.body.token } });
+    });
+
+    test('Should return 200 status and success message if token is valid', async () => {
+        (User.findOne as jest.Mock).mockResolvedValue(true);
+        const req = createRequest({
+            method: 'POST',
+            url: '/api/auth/validate-token',
+            body: {
+                token: '123456'
+            }
+        });
+        const res = createResponse();
+        await AuthController.validateToken(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toHaveProperty('message', 'Token válido');
+        expect(User.findOne).toHaveBeenCalled();
+        expect(User.findOne).toHaveBeenCalledTimes(1);
+        expect(User.findOne).toHaveBeenCalledWith({ where: { token: req.body.token } });
+    });
+});
