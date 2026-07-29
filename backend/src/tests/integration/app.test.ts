@@ -10,7 +10,7 @@ describe('Authentication - Create Account', () => {
     });
 
     afterAll(async () => {
-        await db.close(); // <-- Cerrar el pool de conexiones al terminar
+        await db.close(); 
     });
     
     test('Should return 400 status code error when form is empty', async () => {
@@ -81,6 +81,25 @@ describe('Authentication - Create Account', () => {
         expect(response.statusCode).toBe(201);
         expect(data).toHaveProperty('message');
         expect(data.message).toBe('¡Tu cuenta ha sido creada correctamente!');
+        expect(response.statusCode).not.toBe(400);
+        expect(data).not.toHaveProperty('errors');
+    });
+
+    test('Should return 409 status code when a user is already registered', async () => {
+        const userData = {
+            name : "Test name",
+            password : "test_password",
+            email : "test@test.com"
+        };
+        const response = await request(server)
+                                    .post('/api/auth/create-account')
+                                    .send(userData);
+        const data = response.body;
+
+        expect(response.statusCode).toBe(409);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('Un usuario con ese email ya existe');
+        expect(response.statusCode).not.toBe(201);
         expect(response.statusCode).not.toBe(400);
         expect(data).not.toHaveProperty('errors');
     });

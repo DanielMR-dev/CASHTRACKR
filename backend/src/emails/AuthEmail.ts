@@ -17,7 +17,7 @@ export class AuthEmail {
                 <a href="#">Confirmar cuenta</a>
                 <p>e ingresa el código: <b>${user.token}</b></p>`
         });
-        console.log('Mensaje enviado correctamente:', email.messageId);
+        // console.log('Mensaje enviado correctamente:', email.messageId);
     }
 
     static sendPasswordResetToken = async (user: EmailType) => {
@@ -30,6 +30,6 @@ export class AuthEmail {
                 <a href="#">Reestablecer Password</a>
                 <p>Ingresa el código: <b>${user.token}</b></p>`
         });
-        console.log('Mensaje enviado correctamente:', email.messageId);
+        // console.log('Mensaje enviado correctamente:', email.messageId);
     }
 }
