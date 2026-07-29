@@ -597,3 +597,143 @@ describe('AuthController.getUser', () => {
         expect(data).toStrictEqual(mockUser);
     });
 });
+
+describe('AuthController.updateCurrentUserPassword', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('Should return 401 status error if user is not present in request', async () => {
+        const req = createRequest({
+            method: 'PUT',
+            url: '/api/auth/update-password',
+            body: {
+                current_password: 'currentpassword',
+                new_password: 'newpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.updateCurrentUserPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(401);
+        expect(data).toHaveProperty('error', 'No autorizado');
+    });
+
+    test('Should return 404 status error if user is not found in database', async () => {
+        (User.findByPk as jest.Mock).mockResolvedValue(null);
+        const req = createRequest({
+            method: 'PUT',
+            url: '/api/auth/update-password',
+            user: { id: 1 },
+            body: {
+                current_password: 'currentpassword',
+                new_password: 'newpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.updateCurrentUserPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(404);
+        expect(data).toHaveProperty('error', 'Usuario no encontrado');
+        expect(User.findByPk).toHaveBeenCalled();
+        expect(User.findByPk).toHaveBeenCalledTimes(1);
+        expect(User.findByPk).toHaveBeenCalledWith(req.user!.id);
+    });
+
+    test('Should return 401 status error if current password is incorrect', async () => {
+        const mockUser = {
+            id: 1,
+            password: 'hashed_old_password'
+        };
+        (User.findByPk as jest.Mock).mockResolvedValue(mockUser);
+        (checkPassword as jest.Mock).mockResolvedValue(false);
+
+        const req = createRequest({
+            method: 'PUT',
+            url: '/api/auth/update-password',
+            user: { id: 1 },
+            body: {
+                current_password: 'wrongpassword',
+                new_password: 'newpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.updateCurrentUserPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(401);
+        expect(data).toHaveProperty('error', 'La contraseña actual es incorrecta');
+        expect(User.findByPk).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalled();
+        expect(checkPassword).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalledWith(req.body.current_password, mockUser.password);
+    });
+
+    test('Should update user password and return 200 status with success message', async () => {
+        const mockUser = {
+            id: 1,
+            password: 'hashed_old_password',
+            save: jest.fn().mockResolvedValue(true)
+        };
+        const hashed_new_password = 'hashed_new_password';
+        (User.findByPk as jest.Mock).mockResolvedValue(mockUser);
+        (checkPassword as jest.Mock).mockResolvedValue(true);
+        (hashPassword as jest.Mock).mockResolvedValue(hashed_new_password);
+
+        const req = createRequest({
+            method: 'PUT',
+            url: '/api/auth/update-password',
+            user: { id: 1 },
+            body: {
+                current_password: 'correctpassword',
+                new_password: 'newpassword'
+            }
+        });
+        const res = createResponse();
+        await AuthController.updateCurrentUserPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(200);
+        expect(data).toBe('Contraseña actualizada correctamente');
+        expect(User.findByPk).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalledWith(req.body.current_password, 'hashed_old_password');
+        expect(hashPassword).toHaveBeenCalledWith(req.body.new_password);
+        expect(mockUser.password).toBe(hashed_new_password);
+        expect(mockUser.save).toHaveBeenCalled();
+        expect(mockUser.save).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should handle error when updating user password', async () => {
+        const mockUser = {
+            id: 1,
+            password: 'hashed_old_password',
+            save: jest.fn().mockRejectedValue(new Error())
+        };
+        (User.findByPk as jest.Mock).mockResolvedValue(mockUser);
+        (checkPassword as jest.Mock).mockResolvedValue(true);
+        (hashPassword as jest.Mock).mockResolvedValue('hashed_new_password');
+
+        const req = createRequest({
+            method: 'PUT',
+            url: '/api/auth/update-password',
+            user: { id: 1 },
+            body: {
+                current_password: 'correctpassword',
+                new_password: 'newpassword'
+            }
+        });
+        const res = createResponse();
+        jest.spyOn(console, 'log').mockImplementation(() => {});
+
+        await AuthController.updateCurrentUserPassword(req, res);
+        const data = res._getJSONData();
+
+        expect(res.statusCode).toBe(500);
+        expect(data).toHaveProperty('error', 'Error al actualizar la contraseña');
+        expect(User.findByPk).toHaveBeenCalledTimes(1);
+        expect(mockUser.save).toHaveBeenCalledTimes(1);
+    });
+});
