@@ -121,4 +121,19 @@ describe('Authentication - Confirm Account', () => {
         expect(data.errors[0].msg).toStrictEqual('Token no válido');
         expect(response.statusCode).not.toBe(201);
     });
+
+    test('Should display error if token does not match any token', async () => {
+        const userData = {
+            token : "123456"
+        };
+        const response = await request(server)
+                                    .post('/api/auth/confirm-account')
+                                    .send(userData);
+        const data = response.body;
+
+        expect(response.statusCode).toBe(401);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('Token no válido');
+        expect(response.statusCode).not.toBe(200);
+    });
 });
