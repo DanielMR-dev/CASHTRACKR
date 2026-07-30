@@ -6,6 +6,7 @@ import { AuthController } from '../../controllers/AuthController';
 import { AuthEmail } from '../../emails/AuthEmail';
 import User from '../../models/User';
 import * as authUtils from '../../utils/auth';
+import * as jwtUtils from '../../utils/jwt';
 
 beforeAll(async () => {
     await connectDB();
@@ -259,7 +260,7 @@ describe('Authentication - Login', () => {
             email : "test_wrong_password@test.com"
         };
 
-        const checkPassword = (jest.spyOn(authUtils, 'checkPassword') as jest.Mock).mockResolvedValue(false);
+        const checkPassword = jest.spyOn(authUtils, 'checkPassword').mockResolvedValue(false);
         const response = await request(server)
                                     .post('/api/auth/login')
                                     .send(userData);
@@ -273,5 +274,36 @@ describe('Authentication - Login', () => {
         expect(data).not.toHaveProperty('errors');
         expect(findOne).toHaveBeenCalledTimes(1);
         expect(checkPassword).toHaveBeenCalledTimes(1);
+    });
+
+    test('Should return 200 status code success when the password is correct', async () => {
+        const findOne = (jest.spyOn(User, 'findOne') as jest.Mock).mockResolvedValue({
+            id: 1,
+            name: "Test",
+            password: "hashed_password",
+            confirmed: true
+        });
+        const userData = {
+            password : "correct_password",
+            email : "test_correct_password@test.com"
+        };
+
+        const checkPassword = jest.spyOn(authUtils, 'checkPassword').mockResolvedValue(true);
+        const generateJWT = jest.spyOn(jwtUtils, 'generateJWT').mockReturnValue("test_token");
+        const response = await request(server)
+                                    .post('/api/auth/login')
+                                    .send(userData);
+        const data = response.body;
+
+        expect(response.statusCode).toBe(200);
+        expect(data).toStrictEqual('test_token');
+        expect(response.statusCode).not.toBe(401);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+        expect(findOne).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalledTimes(1); 
+        expect(checkPassword).toHaveBeenCalledWith(userData.password, 'hashed_password'); 
+        expect(generateJWT).toHaveBeenCalledTimes(1);
+        expect(generateJWT).toHaveBeenCalledWith(1);
     });
 });
