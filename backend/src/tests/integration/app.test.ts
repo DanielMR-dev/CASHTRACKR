@@ -3,6 +3,7 @@ import server from '../../server';
 import { connectDB } from '../../server';
 import { db } from '../../config/db';
 import { AuthController } from '../../controllers/AuthController';
+import User from '../../models/User';
 
 beforeAll(async () => {
     await connectDB();
@@ -202,14 +203,38 @@ describe('Authentication - Login', () => {
         const response = await request(server)
                                     .post('/api/auth/login')
                                     .send(userData);
-        const mockLogin = jest.spyOn(AuthController, 'login');
         const data = response.body;
 
         expect(response.statusCode).toBe(404);
         expect(data).toHaveProperty('error');
         expect(data.error).toStrictEqual('Usuario no encontrado');
-        expect(mockLogin).not.toHaveBeenCalled();
         expect(response.statusCode).not.toBe(200);
+        expect(data).not.toHaveProperty('errors');
+    });
+
+    test('Should return 403 status code error when the user is not confirmed', async () => {
+        (jest.spyOn(User, 'findOne') as jest.Mock)
+            .mockResolvedValue({
+                id : 1,
+                name : "test_name",
+                email : "test_not_confirmed@test.com",
+                password : "hashed_password",
+                confirmed : false
+            });
+        const userData = {
+            password : "test_password",
+            email : "test_not_confirmed@test.com"
+        };
+        const response = await request(server)
+                                    .post('/api/auth/login')
+                                    .send(userData);
+        const data = response.body;
+
+        expect(response.statusCode).toBe(403);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('Tu cuenta no ha sido confirmada');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(404);
         expect(data).not.toHaveProperty('errors');
     });
 });
