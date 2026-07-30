@@ -113,12 +113,14 @@ describe('Authentication - Confirm Account', () => {
         const response = await request(server)
                                     .post('/api/auth/confirm-account')
                                     .send(userData);
+        const mockConfirmAccount = jest.spyOn(AuthController, 'confirmAccount');
         const data = response.body;
 
         expect(response.statusCode).toBe(400);
         expect(data).toHaveProperty('errors');
         expect(data.errors).toHaveLength(1);
         expect(data.errors[0].msg).toStrictEqual('Token no válido');
+        expect(mockConfirmAccount).not.toHaveBeenCalled();
         expect(response.statusCode).not.toBe(201);
     });
 
@@ -151,5 +153,24 @@ describe('Authentication - Confirm Account', () => {
         expect(data.message).toStrictEqual('¡Tu cuenta ha sido confirmada correctamente!');
         expect(response.statusCode).not.toBe(401);
         expect(data).not.toHaveProperty('error');
+    });
+});
+
+describe('Authentication - Login', () => {
+    test('Should return 400 status code error when form is empty', async () => {
+        const userData = {};
+        const response = await request(server)
+                                    .post('/api/auth/login')
+                                    .send(userData);
+        const mockLogin = jest.spyOn(AuthController, 'login');
+        const data = response.body;
+
+        expect(response.statusCode).toBe(400);
+        expect(data).toHaveProperty('errors');
+        expect(data.errors).toHaveLength(2);
+        expect(mockLogin).not.toHaveBeenCalled();
+        expect(response.statusCode).not.toBe(200);
+        expect(data.errors).not.toHaveLength(1);
+        expect(data.errors).not.toHaveLength(3);
     });
 });

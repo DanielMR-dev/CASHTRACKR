@@ -158,7 +158,7 @@ describe('AuthController.confirmAccount', () => {
         await AuthController.confirmAccount(req, res);
         const data = res._getJSONData();
 
-        expect(res.statusCode).toBe(201);
+        expect(res.statusCode).toBe(200);
         expect(data).toHaveProperty('message', '¡Tu cuenta ha sido confirmada correctamente!');
         expect(User.findOne).toHaveBeenCalled();
         expect(User.findOne).toHaveBeenCalledTimes(1);

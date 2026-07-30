@@ -37,7 +37,6 @@ router.post('/confirm-account',
 // Login
 router.post('/login',
     body('email')
-        .notEmpty().withMessage('El email es obligatorio')
         .isEmail().withMessage('Email no válido'),
     body('password')
         .notEmpty().withMessage('La contraseña es obligatoria'),
