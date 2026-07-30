@@ -173,4 +173,24 @@ describe('Authentication - Login', () => {
         expect(data.errors).not.toHaveLength(1);
         expect(data.errors).not.toHaveLength(3);
     });
+    
+    test('Should return 400 status code error when the email is invalid', async () => {
+        const userData = {
+            password : "test_password",
+            email : "not_valid"
+        };
+        const response = await request(server)
+                                    .post('/api/auth/login')
+                                    .send(userData);
+        const mockLogin = jest.spyOn(AuthController, 'login');
+        const data = response.body;
+
+        expect(response.statusCode).toBe(400);
+        expect(data).toHaveProperty('errors');
+        expect(data.errors).toHaveLength(1);
+        expect(data.errors[0].msg).toStrictEqual('Email no válido');
+        expect(mockLogin).not.toHaveBeenCalled();
+        expect(response.statusCode).not.toBe(200);
+        expect(data.errors).not.toHaveLength(2);
+    });
 });
