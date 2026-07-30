@@ -4,6 +4,8 @@ import { connectDB } from '../../server';
 import { db } from '../../config/db';
 import { AuthController } from '../../controllers/AuthController';
 import { AuthEmail } from '../../emails/AuthEmail';
+import User from '../../models/User';
+import * as authUtils from '../../utils/auth';
 
 beforeAll(async () => {
     await connectDB();
@@ -160,6 +162,11 @@ describe('Authentication - Confirm Account', () => {
 });
 
 describe('Authentication - Login', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    })
+
     test('Should return 400 status code error when form is empty', async () => {
         const userData = {};
         const response = await request(server)
@@ -215,22 +222,21 @@ describe('Authentication - Login', () => {
     });
 
     test('Should return 403 status code error when the user is not confirmed', async () => {
+        (jest.spyOn(User, 'findOne') as jest.Mock)
+            .mockResolvedValue({
+                id : 1,
+                name : "test_name",
+                email : "test_not_confirmed@test.com",
+                password : "hashed_password",
+                confirmed : false
+            });
         const userData = {
-            name: "Test",
-            password : "password",
+            password : "test_password",
             email : "test_not_confirmed@test.com"
         };
-        const responseCreateAccount = await request(server)
-                    .post('/api/auth/create-account')
-                    .send(userData);
-        expect(responseCreateAccount.statusCode).toBe(201);
-
         const response = await request(server)
                                     .post('/api/auth/login')
-                                    .send({
-                                        password : userData.password,
-                                        email : userData.email
-                                    });
+                                    .send(userData);
         const data = response.body;
 
         expect(response.statusCode).toBe(403);
@@ -239,5 +245,33 @@ describe('Authentication - Login', () => {
         expect(response.statusCode).not.toBe(200);
         expect(response.statusCode).not.toBe(404);
         expect(data).not.toHaveProperty('errors');
+    });
+
+    test('Should return 401 status code error when the password is wrong', async () => {
+        const findOne = (jest.spyOn(User, 'findOne') as jest.Mock).mockResolvedValue({
+            id: 1,
+            name: "Test",
+            password: "hashed_password",
+            confirmed: true
+        });
+        const userData = {
+            password : "wrong_password",
+            email : "test_wrong_password@test.com"
+        };
+
+        const checkPassword = (jest.spyOn(authUtils, 'checkPassword') as jest.Mock).mockResolvedValue(false);
+        const response = await request(server)
+                                    .post('/api/auth/login')
+                                    .send(userData);
+        const data = response.body;
+
+        expect(response.statusCode).toBe(401);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('Password Incorrecto');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+        expect(findOne).toHaveBeenCalledTimes(1);
+        expect(checkPassword).toHaveBeenCalledTimes(1);
     });
 });
