@@ -193,4 +193,23 @@ describe('Authentication - Login', () => {
         expect(response.statusCode).not.toBe(200);
         expect(data.errors).not.toHaveLength(2);
     });
+
+    test('Should return 404 status code error when the user is not found', async () => {
+        const userData = {
+            password : "test_password",
+            email : "test_not_found@test.com"
+        };
+        const response = await request(server)
+                                    .post('/api/auth/login')
+                                    .send(userData);
+        const mockLogin = jest.spyOn(AuthController, 'login');
+        const data = response.body;
+
+        expect(response.statusCode).toBe(404);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('Usuario no encontrado');
+        expect(mockLogin).not.toHaveBeenCalled();
+        expect(response.statusCode).not.toBe(200);
+        expect(data).not.toHaveProperty('errors');
+    });
 });
