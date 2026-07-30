@@ -4,15 +4,15 @@ import { connectDB } from '../../server';
 import { db } from '../../config/db';
 import { AuthController } from '../../controllers/AuthController';
 
-describe('Authentication - Create Account', () => {
-    beforeAll(async () => {
-        await connectDB();
-    });
+beforeAll(async () => {
+    await connectDB();
+});
 
-    afterAll(async () => {
-        await db.close(); 
-    });
+afterAll(async () => {
+    await db.close(); 
+});
     
+describe('Authentication - Create Account', () => {
     test('Should return 400 status code error when form is empty', async () => {
         const response = await request(server)
                                     .post('/api/auth/create-account')
@@ -102,5 +102,23 @@ describe('Authentication - Create Account', () => {
         expect(response.statusCode).not.toBe(201);
         expect(response.statusCode).not.toBe(400);
         expect(data).not.toHaveProperty('errors');
+    });
+});
+
+describe('Authentication - Confirm Account', () => {
+    test('Should display error if token is empty or not valid', async () => {
+        const userData = {
+            token : "not_valid_token"
+        };
+        const response = await request(server)
+                                    .post('/api/auth/confirm-account')
+                                    .send(userData);
+        const data = response.body;
+
+        expect(response.statusCode).toBe(400);
+        expect(data).toHaveProperty('errors');
+        expect(data.errors).toHaveLength(1);
+        expect(data.errors[0].msg).toStrictEqual('Token no válido');
+        expect(response.statusCode).not.toBe(201);
     });
 });
