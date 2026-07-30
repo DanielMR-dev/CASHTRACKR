@@ -16,12 +16,16 @@ export class AuthController {
         try {
             const user = await User.create(req.body);
             user.password = await hashPassword(password);
-            user.token = generateToken();
+            const token = generateToken();
+            user.token = token;
+            if (process.env.NODE_ENV !== 'production') {
+                (globalThis as unknown as { cashTrackrConfirmationToken: string }).cashTrackrConfirmationToken = token;
+            };
             await user.save();
             await AuthEmail.sendConfirmationEmail({
                 name: user.name,
                 email: user.email,
-                token: user.token
+                token: token
             });
             res.status(201).json({ message: '¡Tu cuenta ha sido creada correctamente!' });
         } catch (error) {
@@ -40,7 +44,7 @@ export class AuthController {
             user.confirmed = true;
             user.token = null;
             await user.save();
-            res.status(201).json({ message: '¡Tu cuenta ha sido confirmada correctamente!' });
+            res.status(200).json({ message: '¡Tu cuenta ha sido confirmada correctamente!' });
         } catch (error) {
             console.log(error);
             res.status(500).json({ error: 'Error al confirmar la cuenta' });

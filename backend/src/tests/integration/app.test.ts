@@ -106,7 +106,7 @@ describe('Authentication - Create Account', () => {
 });
 
 describe('Authentication - Confirm Account', () => {
-    test('Should display error if token is empty or not valid', async () => {
+    test('Should return 400 status code error if token is empty or not valid', async () => {
         const userData = {
             token : "not_valid_token"
         };
@@ -122,7 +122,7 @@ describe('Authentication - Confirm Account', () => {
         expect(response.statusCode).not.toBe(201);
     });
 
-    test('Should display error if token does not match any token', async () => {
+    test('Should return 401 status code error if token does not match any token', async () => {
         const userData = {
             token : "123456"
         };
@@ -135,5 +135,21 @@ describe('Authentication - Confirm Account', () => {
         expect(data).toHaveProperty('error');
         expect(data.error).toStrictEqual('Token no válido');
         expect(response.statusCode).not.toBe(200);
+    });
+
+    test('Should return 200 status code success when token is valid', async () => {
+        const userData = {
+            token : (globalThis as unknown as { cashTrackrConfirmationToken: string }).cashTrackrConfirmationToken
+        };
+        const response = await request(server)
+                                    .post('/api/auth/confirm-account')
+                                    .send(userData);
+        const data = response.body;
+
+        expect(response.statusCode).toBe(200);
+        expect(data).toHaveProperty('message');
+        expect(data.message).toStrictEqual('¡Tu cuenta ha sido confirmada correctamente!');
+        expect(response.statusCode).not.toBe(401);
+        expect(data).not.toHaveProperty('error');
     });
 });

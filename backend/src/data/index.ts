@@ -14,6 +14,6 @@ const clearData = async () => {
     }
 };
 
-if(process.argv[2] === '--clear') {
+if (process.argv[2] === '--clear') {
     clearData();
 }
