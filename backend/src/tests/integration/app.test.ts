@@ -3,10 +3,12 @@ import server from '../../server';
 import { connectDB } from '../../server';
 import { db } from '../../config/db';
 import { AuthController } from '../../controllers/AuthController';
-import User from '../../models/User';
+import { AuthEmail } from '../../emails/AuthEmail';
 
 beforeAll(async () => {
     await connectDB();
+    jest.spyOn(AuthEmail, 'sendConfirmationEmail').mockImplementation(() => Promise.resolve());
+    jest.spyOn(AuthEmail, 'sendPasswordResetToken').mockImplementation(() => Promise.resolve());
 });
 
 afterAll(async () => {
@@ -213,21 +215,22 @@ describe('Authentication - Login', () => {
     });
 
     test('Should return 403 status code error when the user is not confirmed', async () => {
-        (jest.spyOn(User, 'findOne') as jest.Mock)
-            .mockResolvedValue({
-                id : 1,
-                name : "test_name",
-                email : "test_not_confirmed@test.com",
-                password : "hashed_password",
-                confirmed : false
-            });
         const userData = {
-            password : "test_password",
+            name: "Test",
+            password : "password",
             email : "test_not_confirmed@test.com"
         };
+        const responseCreateAccount = await request(server)
+                    .post('/api/auth/create-account')
+                    .send(userData);
+        expect(responseCreateAccount.statusCode).toBe(201);
+
         const response = await request(server)
                                     .post('/api/auth/login')
-                                    .send(userData);
+                                    .send({
+                                        password : userData.password,
+                                        email : userData.email
+                                    });
         const data = response.body;
 
         expect(response.statusCode).toBe(403);
