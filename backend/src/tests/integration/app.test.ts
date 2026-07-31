@@ -427,3 +427,24 @@ describe('POST /api/budgets', () => {
         expect(data.error).not.toBe('Error al crear el presupuesto');
     });
 });
+
+describe('GET /api/budgets/:budgetId', () => {
+
+    beforeAll(async () => {
+        jest.restoreAllMocks();
+        await authenticationUser();
+    });
+
+    test('Should return 401 status code error when JWT is not provided', async () => {
+        const response = await request(server)
+                                    .get('/api/budgets/1');
+        const data = response.body;
+
+        expect(response.statusCode).toBe(401);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('No autorizado');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+    });
+});
