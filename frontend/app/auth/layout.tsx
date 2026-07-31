@@ -1,3 +1,5 @@
+import Logo from "@/components/ui/Logo";
+
 export default function AuthLayout({
     children,
 }: Readonly<{
@@ -7,7 +9,7 @@ export default function AuthLayout({
         <>
             <div className="lg:grid lg:grid-cols-2 lg:min-h-screen">
                 <div className="bg-purple-950">
-
+                    <Logo/>
                 </div>
                 <div className="p-10 lg:p-28">
                     <div className="max-w-3xl mx-auto">
