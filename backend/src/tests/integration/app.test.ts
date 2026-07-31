@@ -308,22 +308,26 @@ describe('Authentication - Login', () => {
     });
 });
 
-describe('GET /api/budgets', () => {
+let jwt: string;
+async function authenticationUser() {
+     
+    const response = await request(server)
+                                .post('/api/auth/login')
+                                .send({
+                                    password : "password",
+                                    email : "test@test.com"
+                                });
+    jwt = response.body;
+    expect(response.statusCode).toBe(200);
+};
 
-    let jwt: string;
+describe('GET /api/budgets', () => {
 
     beforeAll(async () => {
         // restore the jest.spy function to its original implementation
         // without this line, the jest.spy function will not be restored
-        jest.restoreAllMocks(); 
-        const response = await request(server)
-                                    .post('/api/auth/login')
-                                    .send({
-                                        password : "password",
-                                        email : "test@test.com"
-                                    });
-        jwt = response.body;
-        expect(response.statusCode).toBe(200);
+        jest.restoreAllMocks();
+        await authenticationUser();
     });
 
     test('Should return 401 status code error when JWT is not provided', async () => {
@@ -368,4 +372,25 @@ describe('GET /api/budgets', () => {
 
     });
 
+});
+
+describe('POST /api/budgets', () => {
+
+    beforeAll(async () => {
+        jest.restoreAllMocks();
+        await authenticationUser();
+    });
+
+    test('Should return 401 status code error when JWT is not provided', async () => {
+        const response = await request(server)
+                                    .post('/api/budgets');
+        const data = response.body;
+
+        expect(response.statusCode).toBe(401);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('No autorizado');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+    });
 });
