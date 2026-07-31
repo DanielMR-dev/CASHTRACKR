@@ -339,4 +339,19 @@ describe('GET /api/budgets', () => {
         expect(data).not.toHaveProperty('errors');
     });
 
+    test('Should return 200 status code success when a valid JWT is provided', async () => {
+        const response = await request(server)
+                                    .get('/api/budgets')
+                                    .auth(jwt, { type: 'bearer' });
+        const data = response.body;
+
+        expect(response.statusCode).toBe(200);
+        expect(data).toHaveLength(0);
+        expect(response.statusCode).not.toBe(401);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+        expect(data.error).not.toBe('No autorizado');
+
+    });
+
 });
