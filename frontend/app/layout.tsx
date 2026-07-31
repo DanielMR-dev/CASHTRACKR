@@ -13,12 +13,12 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-  return (
-    <html
-        lang="en"
-        className={outfit.className}
-    >
-        <body className="min-h-full flex flex-col">{children}</body>
-    </html>
-  );
+    return (
+        <html
+            lang="en"
+            className={outfit.className}
+        >
+            <body className="min-h-full flex flex-col">{children}</body>
+        </html>
+    );
 }
