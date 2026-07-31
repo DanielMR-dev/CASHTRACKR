@@ -25,10 +25,10 @@ export class BudgetController {
             const budget = await Budget.create(req.body);
             budget.userId = req.user!.id;    
             await budget.save();
-            res.status(201).json({ message: 'Presupuesto Creado correctamente' });
+            res.status(201).json({ message: 'Presupuesto creado correctamente' });
         } catch (error) {
             //console.log(error);
-            res.status(500).json({ error: 'Error al Crear el presupuesto' });
+            res.status(500).json({ error: 'Error al crear el presupuesto' });
         }
     }
     

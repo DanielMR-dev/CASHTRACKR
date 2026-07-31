@@ -101,7 +101,7 @@ describe('BudgetController.createBudget', () => {
         const data = res._getJSONData();
 
         expect(res.statusCode).toBe(201);
-        expect(data).toStrictEqual({ message: 'Presupuesto Creado correctamente' });
+        expect(data).toStrictEqual({ message: 'Presupuesto creado correctamente' });
         expect(mockBudget.save).toHaveBeenCalled();
         expect(mockBudget.save).toHaveBeenCalledTimes(1);
         expect(Budget.create).toHaveBeenCalledWith(req.body);
@@ -126,7 +126,7 @@ describe('BudgetController.createBudget', () => {
         const data = res._getJSONData();
 
         expect(res.statusCode).toBe(500);
-        expect(data).toStrictEqual({ error: 'Error al Crear el presupuesto' });
+        expect(data).toStrictEqual({ error: 'Error al crear el presupuesto' });
         expect(mockBudget.save).not.toHaveBeenCalled();
         expect(Budget.create).toHaveBeenCalledWith(req.body);
     });

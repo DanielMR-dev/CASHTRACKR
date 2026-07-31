@@ -420,7 +420,7 @@ describe('POST /api/budgets', () => {
 
         expect(response.statusCode).toBe(201);
         expect(data).toHaveProperty('message');
-        expect(data.message).toStrictEqual('Presupuesto Creado correctamente');
+        expect(data.message).toStrictEqual('Presupuesto creado correctamente');
         expect(response.statusCode).not.toBe(401);
         expect(response.statusCode).not.toBe(404);
         expect(data).not.toHaveProperty('errors');
@@ -553,10 +553,74 @@ describe('PUT /api/budgets/:budgetId', () => {
 
         expect(response.statusCode).toBe(200);
         expect(data).toHaveProperty('message');
-        expect(data.message).toStrictEqual('Presupuesto Actualizado correctamente');
+        expect(data.message).toStrictEqual('Presupuesto actualizado correctamente');
         expect(response.statusCode).not.toBe(401);
         expect(response.statusCode).not.toBe(404);
         expect(data).not.toHaveProperty('errors');
         expect(data.error).not.toBe('Error al actualizar el presupuesto');
+    });
+});
+
+describe('DELETE /api/budgets/:budgetId', () => {
+
+    beforeAll(async () => {
+        jest.restoreAllMocks();
+        await authenticationUser();
+    });
+
+    test('Should return 401 status code error when JWT is not provided', async () => {
+        const response = await request(server)
+                                    .delete('/api/budgets/1');
+        const data = response.body;
+
+        expect(response.statusCode).toBe(401);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('No autorizado');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+    });
+
+    test('Should return 400 status code error when JWT is valid but budget ID is not valid', async () => {
+        const response = await request(server)
+                                    .delete('/api/budgets/invalid_id')
+                                    .auth(jwt, { type: 'bearer' });
+        const data = response.body;
+
+        expect(response.statusCode).toBe(400);
+        expect(data).toHaveProperty('errors');
+        expect(data.errors).toBeTruthy();
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(401);
+        expect(response.statusCode).not.toBe(404);
+    });
+
+    test('Should return 404 status code error when JWT is valid but budget ID does not exist', async () => {
+        const response = await request(server)
+                                    .delete('/api/budgets/300')
+                                    .auth(jwt, { type: 'bearer' });
+        const data = response.body;
+
+        expect(response.statusCode).toBe(404);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('Presupuesto no encontrado');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(401);
+        expect(response.statusCode).not.toBe(400);
+    });
+
+    test('Should return 200 status code success when a valid JWT is provided and budget ID exists', async () => {
+        const response = await request(server)
+                                    .delete('/api/budgets/1')
+                                    .auth(jwt, { type: 'bearer' });
+        const data = response.body;
+
+        expect(response.statusCode).toBe(200);
+        expect(data).toHaveProperty('message');
+        expect(data.message).toStrictEqual('Presupuesto eliminado correctamente');
+        expect(response.statusCode).not.toBe(401);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+        expect(data.error).not.toBe('Error al eliminar el presupuesto');
     });
 });
