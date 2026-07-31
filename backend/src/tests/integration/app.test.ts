@@ -447,4 +447,18 @@ describe('GET /api/budgets/:budgetId', () => {
         expect(response.statusCode).not.toBe(404);
         expect(data).not.toHaveProperty('errors');
     });
+
+    test('Should return 400 status code error when JWT is valid but budget ID is not valid', async () => {
+        const response = await request(server)
+                                    .get('/api/budgets/invalid_id')
+                                    .auth(jwt, { type: 'bearer' });
+        const data = response.body;
+
+        expect(response.statusCode).toBe(400);
+        expect(data).toHaveProperty('errors');
+        expect(data.errors).toBeTruthy();
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(401);
+        expect(response.statusCode).not.toBe(404);
+    });
 });
