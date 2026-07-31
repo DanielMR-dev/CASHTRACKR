@@ -407,4 +407,23 @@ describe('POST /api/budgets', () => {
         expect(response.statusCode).not.toBe(404);
         expect(data).not.toHaveProperty('errors');
     });
+
+    test('Should return 201 status code success when a valid JWT is provided and params are valid to create a new budget', async () => {
+        const response = await request(server)
+                                    .post('/api/budgets')
+                                    .auth(jwt, { type: 'bearer' })
+                                    .send({
+                                        name: 'Budget 1',
+                                        amount: 1000
+                                    });
+        const data = response.body;
+
+        expect(response.statusCode).toBe(201);
+        expect(data).toHaveProperty('message');
+        expect(data.message).toStrictEqual('Presupuesto Creado correctamente');
+        expect(response.statusCode).not.toBe(401);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+        expect(data.error).not.toBe('Error al crear el presupuesto');
+    });
 });
