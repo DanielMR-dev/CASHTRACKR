@@ -17,7 +17,7 @@ beforeAll(async () => {
 afterAll(async () => {
     await db.close(); 
 });
-    
+
 describe('Authentication - Create Account', () => {
     test('Should return 400 status code error when form is empty', async () => {
         const response = await request(server)
@@ -166,7 +166,7 @@ describe('Authentication - Login', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-    })
+    });
 
     test('Should return 400 status code error when form is empty', async () => {
         const userData = {};
@@ -306,4 +306,25 @@ describe('Authentication - Login', () => {
         expect(generateJWT).toHaveBeenCalledTimes(1);
         expect(generateJWT).toHaveBeenCalledWith(1);
     });
+});
+
+describe('GET /api/budgets', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    })
+
+    test('Should return 401 status code error when JWT is not provided', async () => {
+        const response = await request(server)
+                                    .get('/api/budgets');
+        const data = response.body;
+
+        expect(response.statusCode).toBe(401);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('No autorizado');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+    });
+
 });
