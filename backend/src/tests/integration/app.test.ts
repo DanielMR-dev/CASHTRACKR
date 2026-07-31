@@ -461,4 +461,18 @@ describe('GET /api/budgets/:budgetId', () => {
         expect(response.statusCode).not.toBe(401);
         expect(response.statusCode).not.toBe(404);
     });
+
+    test('Should return 404 status code error when JWT is valid but budget ID does not exist', async () => {
+        const response = await request(server)
+                                    .get('/api/budgets/300')
+                                    .auth(jwt, { type: 'bearer' });
+        const data = response.body;
+
+        expect(response.statusCode).toBe(404);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('Presupuesto no encontrado');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(401);
+        expect(response.statusCode).not.toBe(400);
+    });
 });
