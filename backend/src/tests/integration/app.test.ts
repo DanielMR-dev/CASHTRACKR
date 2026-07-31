@@ -76,7 +76,7 @@ describe('Authentication - Create Account', () => {
     test('Should return 201 status code success when user is created', async () => {
         const userData = {
             name : "Test name",
-            password : "test_password",
+            password : "password",
             email : "test@test.com"
         };
         const response = await request(server)
@@ -310,9 +310,21 @@ describe('Authentication - Login', () => {
 
 describe('GET /api/budgets', () => {
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-    })
+    let jwt: string;
+
+    beforeAll(async () => {
+        // restore the jest.spy function to its original implementation
+        // without this line, the jest.spy function will not be restored
+        jest.restoreAllMocks(); 
+        const response = await request(server)
+                                    .post('/api/auth/login')
+                                    .send({
+                                        password : "password",
+                                        email : "test@test.com"
+                                    });
+        jwt = response.body;
+        expect(response.statusCode).toBe(200);
+    });
 
     test('Should return 401 status code error when JWT is not provided', async () => {
         const response = await request(server)
