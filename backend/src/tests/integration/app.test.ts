@@ -393,4 +393,18 @@ describe('POST /api/budgets', () => {
         expect(response.statusCode).not.toBe(404);
         expect(data).not.toHaveProperty('errors');
     });
+
+    test('Should return 500 status code error when JWT is expired', async () => {
+        const response = await request(server)
+                                    .post('/api/budgets')
+                                    .auth('not_valid_jwt_token', { type: 'bearer' });
+        const data = response.body;
+
+        expect(response.statusCode).toBe(500);
+        expect(data).toHaveProperty('error');
+        expect(data.error).toStrictEqual('Token no válido');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+    });
 });
