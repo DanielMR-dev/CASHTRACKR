@@ -475,4 +475,20 @@ describe('GET /api/budgets/:budgetId', () => {
         expect(response.statusCode).not.toBe(401);
         expect(response.statusCode).not.toBe(400);
     });
+
+    test('Should return 200 status code success when a valid JWT is provided and budget ID exists', async () => {
+        const response = await request(server)
+                                    .get('/api/budgets/1')
+                                    .auth(jwt, { type: 'bearer' });
+        const data = response.body;
+
+        expect(response.statusCode).toBe(200);
+        expect(data).toHaveProperty('id');
+        expect(data).toHaveProperty('name');
+        expect(data).toHaveProperty('amount');
+        expect(response.statusCode).not.toBe(401);
+        expect(response.statusCode).not.toBe(404);
+        expect(data).not.toHaveProperty('errors');
+        expect(data.error).not.toBe('Error al obtener el presupuesto');
+    });
 });
