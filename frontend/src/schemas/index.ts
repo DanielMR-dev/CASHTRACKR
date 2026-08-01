@@ -12,4 +12,8 @@ export const RegisterSchema = z.object({
     message: 'Los passwords no coinciden',
     path: ['password_confirmation'],
 });
+
+export const SuccessSchema = z.object({
+    message: z.string()
+});
     

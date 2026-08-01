@@ -3,10 +3,14 @@
 import { register } from "@/actions/create-account-action";
 import { useActionState } from "react";
 import ErrorMessage from "../ui/ErrorMessage";
+import SuccessMessage from "../ui/SuccessMessage";
 
 export default function RegisterForm() {
     const [state, formAction] = useActionState(register, {
-        errors: []
+        errors: [],
+        success: {
+            message: ''
+        }
     });
 
     return (
@@ -16,6 +20,7 @@ export default function RegisterForm() {
                 action={formAction}
             >
                 {state.errors.map(error => <ErrorMessage key={error}>{error}</ErrorMessage>)}
+                {state.success.message && <SuccessMessage>{state.success.message}</SuccessMessage>}
                 <div className="flex flex-col gap-2">
                     <label
                         className="font-bold text-2xl"

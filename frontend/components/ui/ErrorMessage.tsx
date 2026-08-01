@@ -1,7 +1,7 @@
 
 export default function ErrorMessage({ children }: { children: React.ReactNode }) {
     return (
-        <div className="rounded-lg border border-red-500 bg-red-50 p-5 text-red-600 text-center">
+        <div className="bg-red-500 p-2 rounded-lg text-center text-white font-bold">
             {children}
         </div>
     )
