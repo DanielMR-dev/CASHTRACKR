@@ -6,13 +6,18 @@ type ActionStateType = {
     success: {
         message: string;
     };
+    email?: string;
+    name?: string;
 };
 
 
 export async function register(prevState: ActionStateType, formData: FormData) {
+    const email = formData.get("email") as string;
+    const name = formData.get("name") as string;
+
     const registerData = {
-        email: formData.get("email"),
-        name: formData.get("name"),
+        email,
+        name,
         password: formData.get("password"),
         password_confirmation: formData.get("password_confirmation"),
     }
@@ -22,7 +27,9 @@ export async function register(prevState: ActionStateType, formData: FormData) {
         const errors = registerValidation.error.issues.map(error => error.message);
         return { 
             errors,
-            success: { message: '' }
+            success: { message: '' },
+            email,
+            name
         };
     }
     // Register user
@@ -43,7 +50,9 @@ export async function register(prevState: ActionStateType, formData: FormData) {
         const { error } = ErrorResponseSchema.parse(data);
         return {
             errors: [error],
-            success: { message: '' }
+            success: { message: '' },
+            email,
+            name
         }
     }
     const success = SuccessSchema.parse(data);

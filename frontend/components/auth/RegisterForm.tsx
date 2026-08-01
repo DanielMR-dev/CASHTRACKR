@@ -32,6 +32,7 @@ export default function RegisterForm() {
                         placeholder="Email de Registro"
                         className="w-full border border-gray-300 p-3 rounded-lg"
                         name="email"
+                        defaultValue={state.email || ''}
                     />
                 </div>
 
@@ -40,10 +41,11 @@ export default function RegisterForm() {
                         className="font-bold text-2xl"
                     >Nombre</label>
                     <input
-                        type="name"
+                        type="text"
                         placeholder="Nombre de Registro"
                         className="w-full border border-gray-300 p-3 rounded-lg"
                         name="name"
+                        defaultValue={state.name || ''}
                     />
                 </div>
 
