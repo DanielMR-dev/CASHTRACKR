@@ -2,6 +2,7 @@
 
 import { register } from "@/actions/create-account-action";
 import { useActionState } from "react";
+import ErrorMessage from "../ui/ErrorMessage";
 
 export default function RegisterForm() {
     const [state, formAction] = useActionState(register, {
@@ -14,6 +15,7 @@ export default function RegisterForm() {
                 noValidate
                 action={formAction}
             >
+                {state.errors.map(error => <ErrorMessage key={error}>{error}</ErrorMessage>)}
                 <div className="flex flex-col gap-2">
                     <label
                         className="font-bold text-2xl"
