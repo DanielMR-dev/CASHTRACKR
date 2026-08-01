@@ -14,4 +14,5 @@ export async function register(formData: FormData) {
     const errors = registerValidation.error?.issues.map(error => error.message);
     console.log(errors);
     // Register user
+    const url = `${process.env.API_URL}/auth/create-account`;
 }
