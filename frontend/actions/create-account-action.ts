@@ -7,5 +7,8 @@ export async function register(formData: FormData) {
         password: formData.get("password"),
         password_confirmation: formData.get("password_confirmation"),
     }
-    console.log(registerData);
+    // Validate
+
+
+    // Register user
 }
