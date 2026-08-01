@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-
     return (
         <>
             <h1 className="font-black text-6xl text-purple-950">Crea una Cuenta</h1>
@@ -21,6 +20,12 @@ export default function RegisterPage() {
                     className="text-center text-gray-500 font-medium hover:text-purple-600"
                 >
                     ¿Ya tienes cuenta? Inicia Sesión
+                </Link>
+                <Link
+                    href="/auth/forgot-password"
+                    className="text-center text-gray-500 font-medium hover:text-purple-600"
+                >
+                    ¿Olvidaste tu contraseña?
                 </Link>
             </nav>
         </>

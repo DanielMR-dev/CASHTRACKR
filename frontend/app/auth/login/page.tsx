@@ -21,6 +21,12 @@ export default function LoginPage() {
                 >
                     ¿No tienes cuenta? Crea una
                 </Link>
+                <Link
+                    href="/auth/forgot-password"
+                    className="text-center text-gray-500 font-medium hover:text-purple-600"
+                >
+                    ¿Olvidaste tu contraseña?
+                </Link>
             </nav>
         </>
     );
