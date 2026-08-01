@@ -16,4 +16,6 @@ export const RegisterSchema = z.object({
 export const SuccessSchema = z.object({
     message: z.string()
 });
-    
+export const ErrorResponseSchema = z.object({
+    error: z.string()
+});

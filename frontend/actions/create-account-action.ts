@@ -1,6 +1,6 @@
 "use server"
 
-import { RegisterSchema, SuccessSchema } from "@/src/schemas";
+import { ErrorResponseSchema, RegisterSchema, SuccessSchema } from "@/src/schemas";
 type ActionStateType = {
     errors: string[];
     success: {
@@ -22,7 +22,7 @@ export async function register(prevState: ActionStateType, formData: FormData) {
         const errors = registerValidation.error.issues.map(error => error.message);
         return { 
             errors,
-            success: prevState.success
+            success: { message: '' }
         };
     }
     // Register user
@@ -39,10 +39,16 @@ export async function register(prevState: ActionStateType, formData: FormData) {
         }),
     });
     const data = await request.json();
+    if (request.status !== 201) {
+        const { error } = ErrorResponseSchema.parse(data);
+        return {
+            errors: [error],
+            success: { message: '' }
+        }
+    }
     const success = SuccessSchema.parse(data);
-    console.log(success);
     return {
         success,
-        errors: prevState.errors
+        errors: []
     }
 }
