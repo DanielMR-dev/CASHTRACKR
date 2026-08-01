@@ -2,7 +2,11 @@
 
 import { RegisterSchema } from "@/src/schemas";
 
-export async function register(formData: FormData) {
+type ActionStateType = {
+    errors: string[];
+};
+
+export async function register(prevState: ActionStateType, formData: FormData) {
     const registerData = {
         email: formData.get("email"),
         name: formData.get("name"),
@@ -11,11 +15,10 @@ export async function register(formData: FormData) {
     }
     // Validate
     const registerValidation = RegisterSchema.safeParse(registerData);
-    const errors = registerValidation.error?.issues.map(error => error.message);
     if (!registerValidation.success) {
-        return {  };
+        const errors = registerValidation.error.issues.map(error => error.message);
+        return { errors };
     }
-    console.log(errors);
     // Register user
     const url = `${process.env.API_URL}/auth/create-account`;
     const request = await fetch(url, {
@@ -31,4 +34,7 @@ export async function register(formData: FormData) {
     });
     const data = await request.json();
     console.log(data);
+    return {
+        errors: []
+    }
 }
