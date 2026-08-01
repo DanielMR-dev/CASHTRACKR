@@ -1,5 +1,7 @@
 "use server"
 
+import { RegisterSchema } from "@/src/schemas";
+
 export async function register(formData: FormData) {
     const registerData = {
         email: formData.get("email"),
@@ -8,7 +10,8 @@ export async function register(formData: FormData) {
         password_confirmation: formData.get("password_confirmation"),
     }
     // Validate
-
-
+    const registerValidation = RegisterSchema.safeParse(registerData);
+    const errors = registerValidation.error?.issues.map(error => error.message);
+    console.log(errors);
     // Register user
 }
