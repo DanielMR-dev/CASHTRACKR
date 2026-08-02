@@ -27,7 +27,7 @@ export async function register(prevState: ActionStateType, formData: FormData) {
         const errors = registerValidation.error.issues.map(error => error.message);
         return { 
             errors,
-            success: { message: '' },
+            success: { message: "" },
             email,
             name
         };
@@ -50,7 +50,7 @@ export async function register(prevState: ActionStateType, formData: FormData) {
         const { error } = ErrorResponseSchema.parse(data);
         return {
             errors: [error],
-            success: { message: '' },
+            success: { message: "" },
             email,
             name
         }

@@ -9,13 +9,15 @@ export default function RegisterForm() {
     const [state, formAction] = useActionState(register, {
         errors: [],
         success: {
-            message: ''
-        }
+            message: ""
+        },
+        email: "",
+        name: ""
     });
 
     return (
         <form
-                className="mt-14 space-y-5"
+                className="mt-10 space-y-5"
                 noValidate
                 action={formAction}
             >
