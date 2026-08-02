@@ -11,7 +11,7 @@ type ActionStateType = {
 
 export async function confirmAccount(token: string, prevState: ActionStateType) {
     const confirmToken = TokenSchema.safeParse(token);
-    if(!confirmToken.success){
+    if (!confirmToken.success){
         return {
             errors: confirmToken.error.issues.map((issue) => issue.message),
             success: { message: '' },
