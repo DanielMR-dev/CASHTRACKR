@@ -1,7 +1,7 @@
 "use client"
 
 import { useActionState, useEffect, useState, useTransition } from "react";
-import { useRouter, redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { PinInput, PinInputField } from "@chakra-ui/pin-input"
 import { confirmAccount } from "@/actions/confirm-account-action";
@@ -40,7 +40,7 @@ export default function ConfirmAccountForm() {
                 }
             });
         }
-    }, [state]);
+    }, [state, router]);
 
     const handleChange = (tokenValue: string) => {
         setIsComplete(false);

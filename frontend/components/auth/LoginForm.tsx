@@ -1,9 +1,24 @@
 "use client"
+import { authenticate } from "@/actions/authenticate-user-action";
+import { useActionState, useEffect } from "react";
 
 export default function LoginForm() {
+
+    const [state, formAction] = useActionState(authenticate, {
+        errors: [],
+        success: { 
+            message: "" 
+        }
+    });
+
+    useEffect(() => {
+        console.log(state.errors)
+    }, [state]);
+
     return (
         <>
             <form
+                action={formAction}
                 className="mt-14 space-y-5"
                 noValidate
             >
