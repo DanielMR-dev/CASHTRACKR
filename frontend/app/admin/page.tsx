@@ -16,7 +16,7 @@ export default function AdminPage() {
                 >
                     Crear Presupuesto
                 </Link>
-            </div>
+            </div> 
         </>
     )
 }
