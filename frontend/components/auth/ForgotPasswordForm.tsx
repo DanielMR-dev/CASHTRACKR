@@ -18,6 +18,9 @@ export default function ForgotPasswordForm() {
                 toast.error(error);
             });
         }
+        if (state.success.message) {
+            toast.success(state.success.message);
+        }
     }, [state]);
 
     return (
