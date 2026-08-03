@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { ErrorResponseSchema, LoginSchema } from "@/src/schemas";
 
 type ActionStateType = {
@@ -49,7 +50,5 @@ export async function authenticate(prevState: ActionStateType, formData: FormDat
         httpOnly: true,
         path: "/",
     });
-    return {
-        errors: [],
-    }
+    redirect("/admin");
 }
