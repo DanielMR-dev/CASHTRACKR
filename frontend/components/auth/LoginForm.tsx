@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import { authenticate } from "@/actions/authenticate-user-action";
 
 export default function LoginForm() {
-
     const [state, formAction] = useActionState(authenticate, {
         errors: [],
         success: { 

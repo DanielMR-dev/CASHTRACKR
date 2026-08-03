@@ -12,6 +12,7 @@ export default function ConfirmAccountForm() {
     const [, startTransition] = useTransition();
     const [token, setToken] = useState("");
     const confirmAccountWithToken = confirmAccount.bind(null, token);
+    
     const [state, dispatch] = useActionState(confirmAccountWithToken, {
         errors: [],
         success: { 
