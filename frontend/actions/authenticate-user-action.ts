@@ -2,7 +2,12 @@
 
 import { LoginSchema } from "@/src/schemas";
 
-export async function authenticate(prevState: any, formData: FormData) {
+type ActionStateType = {
+    errors: string[];
+    
+}
+
+export async function authenticate(prevState: ActionStateType, formData: FormData) {
     const loginCredentials = {
         email: formData.get("email"),
         password: formData.get("password")
@@ -17,5 +22,9 @@ export async function authenticate(prevState: any, formData: FormData) {
                 message: ""
             }
         }
+    }
+
+    return {
+        errors: [],
     }
 }
