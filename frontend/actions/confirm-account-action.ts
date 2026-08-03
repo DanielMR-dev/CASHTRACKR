@@ -14,7 +14,7 @@ export async function confirmAccount(token: string, prevState: ActionStateType) 
     if (!confirmToken.success){
         return {
             errors: confirmToken.error.issues.map((issue) => issue.message),
-            success: { message: '' },
+            success: { message: "" },
         };
     }
     // Confirm account
@@ -33,7 +33,7 @@ export async function confirmAccount(token: string, prevState: ActionStateType) 
         const { error } = ErrorResponseSchema.parse(data);
         return {
             errors: [error],
-            success: { message: '' },
+            success: { message: "" },
         }
     }
     const success = SuccessSchema.parse(data);
