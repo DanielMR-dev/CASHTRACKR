@@ -9,7 +9,7 @@ type ActionStateType = {
     };
 };
 
-export async function confirmAccount(prevState: ActionStateType, token: string) {
+export async function confirmAccount(token: string, prevState: ActionStateType) {
     const confirmToken = TokenSchema.safeParse(token);
     if (!confirmToken.success){
         return {
