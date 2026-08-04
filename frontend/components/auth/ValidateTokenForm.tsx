@@ -39,7 +39,7 @@ export default function ValidateTokenForm({ setIsValidToken }: validateTokenForm
             toast.success(state.success.message);
             setIsValidToken(true);
         }
-    }, [state]);
+    }, [state, setIsValidToken]);
 
 
     const handleChange = (tokenValue: string) => {
