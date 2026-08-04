@@ -1,9 +1,13 @@
-import { useActionState, useEffect, useTransition, useState } from "react";
+import { useActionState, useEffect, useTransition, useState, Dispatch, SetStateAction } from "react";
 import { validateToken } from "@/actions/validate-token-action";
 import { PinInput, PinInputField } from "@chakra-ui/pin-input";
 import { toast } from "react-toastify";
 
-export default function ValidateTokenForm() {
+type validateTokenFormProps = {
+    setIsValidToken: Dispatch<SetStateAction<boolean>>
+}
+
+export default function ValidateTokenForm({ setIsValidToken }: validateTokenFormProps) {
 
     const [isComplete, setIsComplete] = useState(false);
     const [, startTransition] = useTransition();
@@ -33,6 +37,7 @@ export default function ValidateTokenForm() {
         }
         if (state.success.message) {
             toast.success(state.success.message);
+            setIsValidToken(true);
         }
     }, [state]);
 

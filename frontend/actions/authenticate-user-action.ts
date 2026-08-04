@@ -18,9 +18,7 @@ export async function authenticate(prevState: ActionStateType, formData: FormDat
     if (!auth.success) {
         return {
             errors: auth.error.issues.map((issue) => issue.message),
-            success: {
-                message: ""
-            }
+            success: { message: "" }
         }
     }
     // Login User
