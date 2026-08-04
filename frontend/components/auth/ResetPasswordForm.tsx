@@ -2,9 +2,10 @@ import { useActionState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { resetPassword } from "@/actions/reset-password-action";
 
-export default function ResetPasswordForm() {
-  
-    const [state, formAction] = useActionState(resetPassword, {
+export default function ResetPasswordForm({ token } : { token: string }) {
+
+    const resetPasswordWithToken = resetPassword.bind(null, token);
+    const [state, formAction] = useActionState(resetPasswordWithToken, {
         errors: [],
         success: { 
             message: "" 
