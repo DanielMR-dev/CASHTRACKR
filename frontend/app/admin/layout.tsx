@@ -12,10 +12,10 @@ export default async function AdminLayout({
     const { user } = await verifySession();
     return (
         <>
-            <header className='bg-purple-950 py-5'>
-                <div className='max-w-5xl mx-auto flex flex-col lg:flex-row justify-between items-center'>
-                    <div className='w-96'>
-                        <Link href={'/admin'}>
+            <header className="bg-purple-950 py-5">
+                <div className="max-w-5xl w-full mx-auto flex flex-col lg:flex-row justify-between items-center">
+                    <div className="w-96">
+                        <Link href={"/admin"}>
                             <Logo />
                         </Link>
                     </div>
@@ -24,13 +24,13 @@ export default async function AdminLayout({
                     />
                 </div>
             </header>
-            <section className='max-w-5xl mx-auto mt-20 p-3 py-10'>
+            <section className="max-w-5xl w-full mx-auto mt-10 p-3 py-8">
                 {children}
             </section>
             <ToastNotification />
 
-            <footer className='py-5'>
-                <p className='text-center'>
+            <footer className="py-5">
+                <p className="text-center">
                     Todos los Derechos Reservados {new Date().getFullYear()}
                 </p>
             </footer>
