@@ -50,7 +50,18 @@ export const DraftBudgetSchema = z.object({
         amount: z.coerce.
                 number({message: 'Cantidad no válida'})
                 .min(1, {message: 'Cantidad no válida'}),
-})
+});
+
+export const BudgetAPIResponseSchema = z.object({
+        id: z.number(),
+        name: z.string(),
+        amount: z.string(),
+        userId: z.number(),
+        createdAt: z.string(),
+        updatedAt: z.string()
+});
+
+export const UserBudgetsResponseSchema = z.array(BudgetAPIResponseSchema);
 
 export const UserSchema = z.object({
         id: z.number(),
