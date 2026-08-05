@@ -1,6 +1,6 @@
+import { getToken } from "@/src/auth/token";
 import { UserBudgetsResponseSchema } from "@/src/schemas";
 import { Metadata } from "next";
-import { cookies } from "next/headers";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -9,8 +9,7 @@ export const metadata: Metadata = {
 };
 
 async function getUserBudgets() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("CASHTRACKR_TOKEN")?.value;
+    const token = getToken();
     const url = `${process.env.API_URL}/budgets`;
     const request = await fetch(url, {
         headers: {
