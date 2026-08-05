@@ -22,7 +22,7 @@ export async function createBudget(prevState: ActionStateType, formData: FormDat
             success: { message: "" }
         }
     }
-    const token = getToken();
+    const token = await getToken();
     const url = `${process.env.API_URL}/budgets`;
     const request = await fetch(url, {
         method: "POST",

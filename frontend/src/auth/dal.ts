@@ -7,7 +7,7 @@ import { getToken } from "./token";
 
 export const verifySession = cache( async () => {
     try {
-        const token = getToken();
+        const token = await getToken();
         if (!token) {
             redirect("/auth/login");
         }
