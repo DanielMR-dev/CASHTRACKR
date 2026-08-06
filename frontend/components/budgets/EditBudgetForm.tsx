@@ -3,6 +3,7 @@ import { useActionState } from "react";
 import { Budget } from "@/src/schemas";
 import BudgetForm from "./BudgetForm";
 import { editBudget } from "@/actions/edit-budget-action";
+import ErrorMessage from "../ui/ErrorMessage";
 
 export default function EditBudgetForm({budget}: {budget: Budget}) {
 
@@ -18,6 +19,7 @@ export default function EditBudgetForm({budget}: {budget: Budget}) {
             noValidate
             action={formAction}
         >
+            {state.errors.map(error => <ErrorMessage key={error}>{error}</ErrorMessage>)}
             <BudgetForm
                 budget={budget}
             />
