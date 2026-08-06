@@ -60,6 +60,7 @@ export const BudgetAPIResponseSchema = z.object({
         createdAt: z.string(),
         updatedAt: z.string()
 });
+export type Budget = z.infer<typeof BudgetAPIResponseSchema>;
 
 export const UserBudgetsResponseSchema = z.array(BudgetAPIResponseSchema);
 
