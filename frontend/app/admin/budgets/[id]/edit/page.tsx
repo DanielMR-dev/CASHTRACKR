@@ -1,5 +1,6 @@
 import { getToken } from "@/src/auth/token";
 import { BudgetAPIResponseSchema } from "@/src/schemas";
+import { notFound } from "next/navigation";
 
 const getBudget = async (budgetId: string) => {
     const token = await getToken();
@@ -11,6 +12,9 @@ const getBudget = async (budgetId: string) => {
         }
     });
     const data = await request.json();
+    if (!request.ok) {
+        notFound();
+    }
     const budget = BudgetAPIResponseSchema.parse(data);
     return budget;
 }
