@@ -1,18 +1,28 @@
 "use client"
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { editBudget } from "@/actions/edit-budget-action";
 import { Budget } from "@/src/schemas";
 import BudgetForm from "./BudgetForm";
-import { editBudget } from "@/actions/edit-budget-action";
 import ErrorMessage from "../ui/ErrorMessage";
 
 export default function EditBudgetForm({budget}: {budget: Budget}) {
 
+    const router = useRouter();
     const editBudgetWithId = editBudget.bind(null, budget.id);
     const [state, formAction] = useActionState(editBudgetWithId, {
         errors: [],
         success: { message: "" }
     });
 
+    useEffect(() => {
+        if (state.success.message) {
+            toast.success(state.success.message);
+            router.push("/admin");
+        }
+    }, [state.success.message, router]);
+    
     return (
         <form
             className="mt-5 space-y-3"
