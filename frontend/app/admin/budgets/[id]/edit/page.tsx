@@ -43,7 +43,9 @@ export default async function EditBudgetPage({ params }: {params: {id: string}})
                     </Link>
                 </div>
                 <div className="p-10 mt-10  shadow-lg border border-gray-300 rounded-lg ">
-                    <EditBudgetForm />
+                    <EditBudgetForm 
+                        budget={budget}
+                    />
                 </div>
             </>
     );
