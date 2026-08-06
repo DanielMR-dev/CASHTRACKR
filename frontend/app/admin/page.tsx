@@ -85,5 +85,5 @@ export default async function AdminPage() {
                 </p>
             )}
         </>
-    ) 
+    );
 }
