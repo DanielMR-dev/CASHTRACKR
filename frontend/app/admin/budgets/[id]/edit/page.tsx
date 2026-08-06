@@ -1,6 +1,7 @@
 import EditBudgetForm from "@/components/budgets/EditBudgetForm";
 import { getToken } from "@/src/auth/token";
 import { BudgetAPIResponseSchema } from "@/src/schemas";
+import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -21,8 +22,17 @@ const getBudget = async (budgetId: string) => {
     return budget;
 }
 
+export async function generateMetada({params}: {params: {id: string}}) : Promise<Metadata> {
+    const { id } = params;
+    const budget = await getBudget(id);
+    return {
+        title: `CashTrackr - ${budget.name}`,
+        description: `Edita el presupuesto ${budget.name}`,
+    };
+}
+
 export default async function EditBudgetPage({ params }: {params: {id: string}}) {
-    const { id } = await params;
+    const { id } = params;
     const budget = await getBudget(id);
     return (
             <>
