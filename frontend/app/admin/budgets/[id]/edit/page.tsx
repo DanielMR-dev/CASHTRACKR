@@ -1,3 +1,4 @@
+import EditBudgetForm from "@/components/budgets/EditBudgetForm";
 import { getToken } from "@/src/auth/token";
 import { BudgetAPIResponseSchema } from "@/src/schemas";
 import Link from "next/link";
@@ -42,7 +43,7 @@ export default async function EditBudgetPage({ params }: {params: {id: string}})
                     </Link>
                 </div>
                 <div className="p-10 mt-10  shadow-lg border border-gray-300 rounded-lg ">
-
+                    <EditBudgetForm />
                 </div>
             </>
     );
