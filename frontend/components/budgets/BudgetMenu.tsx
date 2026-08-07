@@ -28,7 +28,7 @@ export default function BudgetMenu({budgetId} : {budgetId : Budget["id"]}) {
                         <MenuItem>
                             <Link
                                 href={`/admin/budgets/${budgetId}`}
-                                className='block px-3 py-1 text-sm leading-6 text-gray-900'
+                                className="block px-3 py-1 text-sm leading-6 text-gray-900"
                             >
                                 Ver Presupuesto
                             </Link>
@@ -36,7 +36,7 @@ export default function BudgetMenu({budgetId} : {budgetId : Budget["id"]}) {
                         <MenuItem>
                             <Link
                                 href={`/admin/budgets/${budgetId}/edit`}
-                                className='block px-3 py-1 text-sm leading-6 text-gray-900'
+                                className="block px-3 py-1 text-sm leading-6 text-gray-900"
                             >
                                 Editar Presupuesto
                             </Link>
@@ -44,8 +44,8 @@ export default function BudgetMenu({budgetId} : {budgetId : Budget["id"]}) {
 
                         <MenuItem>
                             <button
-                                type='button'
-                                className='block px-3 py-1 text-sm leading-6 text-red-500'
+                                type="button"
+                                className="block px-3 py-1 text-sm leading-6 text-red-500 cursor-pointer"
                                 onClick={ () => router.push(`?deleteBudgetId=${budgetId}`) }
                             >
                                 Eliminar Presupuesto
