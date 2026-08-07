@@ -3,13 +3,17 @@ import Logo from "@/components/ui/Logo";
 import ToastNotification from "@/components/ui/ToastNotification";
 import { verifySession } from "@/src/auth/dal";
 import AdminMenu from "@/components/admin/AdminMenu";
+import { redirect } from "next/navigation";
 
 export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    const { user } = await verifySession();
+    const { user, isAuth } = await verifySession();
+    if (!isAuth || !user) {
+        redirect("/auth/login");
+    }
     return (
         <>
             <header className="bg-purple-950 py-5">
