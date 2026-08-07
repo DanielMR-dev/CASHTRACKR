@@ -1,11 +1,19 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { DialogTitle } from "@headlessui/react"
+import { useActionState } from "react";
+import { deleteBudget } from "@/actions/delete-budget-action";
 
 export default function ConfirmPasswordForm() {
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const budgetId = searchParams.get("deleteBudgetId");
+    const budgetId = +searchParams.get("deleteBudgetId")!;
+
+    const deleteBudgetWithPassword = deleteBudget.bind(null, budgetId);
+    const [state, formAction] = useActionState(deleteBudgetWithPassword, {
+        errors: [],
+        success: { message: "" },
+    });
 
     const closeModal = () => {
         const hideModal = new URLSearchParams(searchParams.toString());
@@ -28,6 +36,7 @@ export default function ConfirmPasswordForm() {
             <form
                 className=" mt-14 space-y-5"
                 noValidate
+                action={formAction}
             >
                 <div className="flex flex-col gap-5">
                     <label
