@@ -1,7 +1,7 @@
 "use server"
 
 import { getToken } from "@/src/auth/token";
-import { Budget, ErrorResponseSchema, PasswordValidationSchema } from "@/src/schemas";
+import { Budget, ErrorResponseSchema, PasswordValidationSchema, SuccessSchema } from "@/src/schemas";
 
 type ActionStateType = {
     errors: string[];
@@ -39,11 +39,26 @@ export async function deleteBudget(budgetId: Budget["id"], prevState: ActionStat
             success: { message: "" },
         };
     }
-
+    // Delete Budget
+    const deleteBudgetUrl = `${process.env.API_URL}/budgets/${budgetId}`;
+    const deleteBudgetRequest = await fetch(deleteBudgetUrl, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+    const deleteBudgetData = await deleteBudgetRequest.json();
+    if (!deleteBudgetRequest.ok) {
+        const { error } = ErrorResponseSchema.parse(deleteBudgetData);
+        return {
+            errors: [error],
+            success: { message: "" },
+        };
+    }
+    const success = SuccessSchema.parse(deleteBudgetData);
     return {
         errors: [],
-        success: {
-            message: "",
-        },
+        success: success,
     };
 }
