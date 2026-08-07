@@ -3,8 +3,8 @@ import Link from "next/link";
 import EditBudgetForm from "@/components/budgets/EditBudgetForm";
 import { getBudget } from "@/src/services/budgets";
 
-export async function generateMetada({params}: {params: {id: string}}) : Promise<Metadata> {
-    const { id } = params;
+export async function generateMetada({params}: {params: Promise<{id: string}>}) : Promise<Metadata> {
+    const { id } = await params;
     const budget = await getBudget(id);
     return {
         title: `CashTrackr - ${budget.name}`,
@@ -12,8 +12,8 @@ export async function generateMetada({params}: {params: {id: string}}) : Promise
     };
 }
 
-export default async function EditBudgetPage({ params }: {params: {id: string}}) {
-    const { id } = params;
+export default async function EditBudgetPage({ params }: {params: Promise<{id: string}>}) {
+    const { id } = await params;
     const budget = await getBudget(id);
     return (
             <>
