@@ -83,8 +83,8 @@ export default async function AdminPage() {
                 <p className="text-center py-20">
                     No hay presupuestos aún {""}
                     <Link
-                    href={"/admin/budgets/new"}
-                    className="text-purple-950 font-bold"
+                        href={"/admin/budgets/new"}
+                        className="text-purple-950 font-bold"
                     > comienza creando uno</Link>
                 </p>
             )}
