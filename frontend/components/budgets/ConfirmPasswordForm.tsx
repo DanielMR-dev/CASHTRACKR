@@ -2,6 +2,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { DialogTitle } from "@headlessui/react"
 import { useActionState } from "react";
 import { deleteBudget } from "@/actions/delete-budget-action";
+import ErrorMessage from "../ui/ErrorMessage";
 
 export default function ConfirmPasswordForm() {
     const pathname = usePathname();
@@ -32,9 +33,10 @@ export default function ConfirmPasswordForm() {
             <p className="text-xl font-bold">Ingresa tu Password para {''}
                 <span className="text-amber-500">eliminar el presupuesto {''}</span>
             </p>
-            <p className="text-gray-600 text-sm">(Un presupuesto eliminado y sus gastos no se pueden recuperar)</p>
+            <p className="text-gray-600 text-sm mb-5">(Un presupuesto eliminado y sus gastos no se pueden recuperar)</p>
+            {state.errors.map(error => <ErrorMessage key={error}>{error}</ErrorMessage>)}
             <form
-                className=" mt-14 space-y-5"
+                className="mt-5 space-y-5"
                 noValidate
                 action={formAction}
             >
