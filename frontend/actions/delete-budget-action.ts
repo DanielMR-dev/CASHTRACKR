@@ -2,6 +2,7 @@
 
 import { getToken } from "@/src/auth/token";
 import { Budget, ErrorResponseSchema, PasswordValidationSchema, SuccessSchema } from "@/src/schemas";
+import { revalidatePath } from "next/cache";
 
 type ActionStateType = {
     errors: string[];
@@ -57,6 +58,7 @@ export async function deleteBudget(budgetId: Budget["id"], prevState: ActionStat
         };
     }
     const success = SuccessSchema.parse(deleteBudgetData);
+    revalidatePath("/admin");
     return {
         errors: [],
         success: success,

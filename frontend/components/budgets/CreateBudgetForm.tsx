@@ -19,14 +19,8 @@ export default function CreateBudgetForm() {
 
     useEffect(() => {
         if (state.success.message) {
-            toast.success(state.success.message, {
-                onClose: () => {
-                    router.push("/admin");
-                },
-                onClick: () => {
-                    router.push("/admin");
-                }
-            });
+            toast.success(state.success.message);
+            router.push("/admin");
         }
     }, [state, router]);
 
