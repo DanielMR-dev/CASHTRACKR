@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { getBudget } from "@/src/services/budgets";
 import AddExpenseButton from "@/components/expenses/AddExpenseButton";
+import ModalContainer from "@/components/ui/ModalContainer";
 
 export async function generateMetada({params}: {params: Promise<{id: string}>}) : Promise<Metadata> {
     const { id } = await params;
@@ -23,6 +24,8 @@ export default async function BudgetDetailsPage({ params }: { params: Promise<{ 
                 </div>
                 <AddExpenseButton />
             </div>
+
+            <ModalContainer />
         </>
     );
 }
