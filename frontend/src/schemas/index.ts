@@ -46,13 +46,21 @@ export const ResetPasswordSchema = z.object({
 
 export const DraftBudgetSchema = z.object({
         name: z.string()
-                .min(1, {message: 'El Nombre del presupuesto es obligatorio'}),
+                .min(1, {message: 'El nombre del presupuesto es requerido'}),
         amount: z.coerce.
                 number({message: 'Cantidad no válida'})
                 .min(1, {message: 'Cantidad no válida'}),
 });
 
 export const PasswordValidationSchema = z.string().min(1, { message: 'Password requerido' })
+
+export const DraftExpenseSchema = z.object({
+        name: z.string()
+                .min(1, {message: 'El nombre del gasto es requerido'}),
+        amount: z.coerce.
+                number({message: 'Cantidad no válida'})
+                .min(1, {message: 'Cantidad no válida'}),
+});
 
 export const BudgetAPIResponseSchema = z.object({
         id: z.number(),
