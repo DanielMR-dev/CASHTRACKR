@@ -1,6 +1,7 @@
 "use server"
 
-import { DraftExpenseSchema } from "@/src/schemas";
+import { getToken } from "@/src/auth/token";
+import { DraftExpenseSchema, ErrorResponseSchema, SuccessSchema } from "@/src/schemas";
 
 type ActionStateType = {
     errors: string[];
@@ -21,8 +22,31 @@ export default async function createExpense(budgetId: number, prevState: ActionS
             success: { message: "" }
         }
     }
+    // Generate Expense
+    const token = await getToken();
+    const url = `${process.env.API_URL}/budgets/${budgetId}/expenses`;
+    const request = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            name: expense.data.name,
+            amount: expense.data.amount
+        })
+    });
+    const data = await request.json();
+    if (!request.ok) {
+        const { error } = ErrorResponseSchema.parse(data);
+        return {
+            errors: [error],
+            success: { message: "" }
+        }
+    }
+    const success = SuccessSchema.parse(data);
     return {
         errors: [],
-        success: { message: "" }
+        success: success
     }
 }

@@ -1,11 +1,12 @@
 import { DialogTitle } from "@headlessui/react";
 import ExpenseForm from "./ExpenseForm";
 import createExpense from "@/actions/create-expense-action";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import ErrorMessage from "../ui/ErrorMessage";
+import { toast } from "react-toastify";
 
-export default function AddExpenseForm() {
+export default function AddExpenseForm({ closeModal }: { closeModal: () => void }) {
     const { id } = useParams<{ id: string }>();
     const budgetId = Number(id); // o +id
     const createExpenseWithBudgetId = createExpense.bind(null, budgetId);
@@ -13,6 +14,13 @@ export default function AddExpenseForm() {
         errors: [],
         success: { message: "" }
     });
+
+    useEffect(() => {
+        if (state.success.message) {
+            toast.success(state.success.message);
+            closeModal();
+        }
+    }, [state, closeModal]);
 
     return (
         <>
