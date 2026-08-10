@@ -1,7 +1,18 @@
 import { DialogTitle } from "@headlessui/react";
 import ExpenseForm from "./ExpenseForm";
+import createExpense from "@/actions/create-expense-action";
+import { useActionState } from "react";
+import { useParams } from "next/navigation";
 
 export default function AddExpenseForm() {
+    const { id } = useParams<{ id: string }>();
+    const budgetId = Number(id); // o +id
+    const createExpenseWithBudgetId = createExpense.bind(null, budgetId);
+    const [state, formAction] = useActionState(createExpenseWithBudgetId, {
+        errors: [],
+        success: { message: "" }
+    });
+
     return (
         <>
             <DialogTitle
@@ -17,6 +28,7 @@ export default function AddExpenseForm() {
             <form
                 className="bg-gray-100 shadow-lg rounded-lg p-10 mt-10 border border-gray-300"
                 noValidate
+                action={formAction}
             > 
                 <ExpenseForm />
 
