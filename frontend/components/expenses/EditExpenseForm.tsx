@@ -1,12 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DialogTitle } from "@headlessui/react";
 import ExpenseForm from "./ExpenseForm";
 import { useParams, useSearchParams } from "next/navigation";
+import { DraftExpense } from "@/src/schemas";
 
 export default function EditExpenseForm({ closeModal }: { closeModal: () => void }) {
-
+    const [expense, setExpense] = useState<DraftExpense>();
     const { id: budgetId } = useParams();
-
     const searchParams = useSearchParams();
     const expenseId = searchParams.get("editExpenseId");
 
@@ -14,9 +14,7 @@ export default function EditExpenseForm({ closeModal }: { closeModal: () => void
         const url = `${process.env.NEXT_PUBLIC_URL}/admin/api/budgets/${budgetId}/expenses/${expenseId}`;
         fetch(url)
             .then(res => res.json())
-            .then(data => {
-                console.log(data);
-            })
+            .then(data => setExpense(data));
     }, [budgetId, expenseId]);
 
     return (
@@ -34,7 +32,9 @@ export default function EditExpenseForm({ closeModal }: { closeModal: () => void
                 className="bg-gray-100 shadow-lg rounded-lg p-10 mt-10 border border-gray-300"
                 noValidate
             >
-                <ExpenseForm />
+                <ExpenseForm 
+                    expense={expense}
+                />
                 <input
                     type="submit"
                     className="bg-amber-500 w-full p-3 text-white uppercase font-bold hover:bg-amber-600 cursor-pointer transition-colors"

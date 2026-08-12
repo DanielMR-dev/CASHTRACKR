@@ -82,6 +82,7 @@ export const BudgetAPIResponseSchema = z.object({
 });
 export type Budget = z.infer<typeof BudgetAPIResponseSchema>;
 export type Expense = z.infer<typeof ExpenseAPIResponseSchema>;
+export type DraftExpense = z.infer<typeof DraftExpenseSchema>;
 
 export const UserBudgetsResponseSchema = z.array(BudgetAPIResponseSchema.omit({expenses: true}));
 
