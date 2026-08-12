@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { getBudget } from "@/src/services/budgets";
 import AddExpenseButton from "@/components/expenses/AddExpenseButton";
 import ModalContainer from "@/components/ui/ModalContainer";
+import { formatCurrency, formatDate } from "@/src/utils";
 
 export async function generateMetada({params}: {params: Promise<{id: string}>}) : Promise<Metadata> {
     const { id } = await params;
@@ -25,6 +26,35 @@ export default async function BudgetDetailsPage({ params }: { params: Promise<{ 
                 <AddExpenseButton />
             </div>
 
+            {budget.expenses.length ? (
+                <>
+                    <h1 className="font-black text-4xl text-purple-950 mt-5">
+                        Gastos en este presupuesto
+                    </h1>
+                    <ul role="list" className="divide-y divide-gray-300 border shadow-lg mt-10 ">
+                        {budget.expenses.map((expense) => (
+                            <li key={expense.id} className="flex justify-between gap-x-6 p-5">
+                                <div className="flex min-w-0 gap-x-4">
+                                    <div className="min-w-0 flex-auto space-y-2">
+                                        <p className="text-2xl font-semibold text-gray-900">
+                                            {expense.name}
+                                        </p>
+                                        <p className="text-xl font-bold text-amber-500">
+                                            {formatCurrency(+expense.amount)}
+                                        </p>
+                                        <p className='text-gray-500  text-sm'>
+                                            Agregado: {""}
+                                            <span className="font-bold">{formatDate(expense.createdAt)}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        ))}
+                        </ul>
+                </>
+            ) : (
+                <p className="text-center py-10">No hay gastos aún</p>
+            )}
             <ModalContainer />
         </>
     );
