@@ -32,7 +32,7 @@ export default async function BudgetDetailsPage({ params }: { params: Promise<{ 
                     <h1 className="font-black text-4xl text-purple-950 mt-5">
                         Gastos en este presupuesto
                     </h1>
-                    <ul role="list" className="divide-y divide-gray-300 border border-gray-300 shadow-lg mt-10 ">
+                    <ul role="list" className="divide-y divide-gray-300 border border-gray-300 shadow-lg mt-10 rounded-lg">
                         {budget.expenses.map((expense) => (
                             <li key={expense.id} className="flex justify-between gap-x-6 p-5">
                                 <div className="flex min-w-0 gap-x-4">

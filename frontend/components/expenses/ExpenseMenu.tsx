@@ -28,8 +28,8 @@ export default function ExpenseMenu({ expenseId }: { expenseId: Expense["id"] })
                     <MenuItems className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                         <MenuItem>
                             <button
-                                type='button'
-                                className='block px-3 py-1 text-sm leading-6 text-gray-900'
+                                type="button"
+                                className="block px-3 py-1 text-sm leading-6 text-gray-900 cursor-pointer"
                                 onClick={() => router.push(location.pathname + `?showModal=true&editExpenseId=${expenseId}`)}
                             >
                                 Editar Gasto
@@ -38,8 +38,8 @@ export default function ExpenseMenu({ expenseId }: { expenseId: Expense["id"] })
 
                         <MenuItem>
                             <button
-                                type='button'
-                                className='block px-3 py-1 text-sm leading-6 text-red-500'
+                                type="button"
+                                className="block px-3 py-1 text-sm leading-6 text-red-500 cursor-pointer"
                                 onClick={() => {}}
                             >
                                 Eliminar Gasto
