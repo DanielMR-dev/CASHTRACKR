@@ -1,10 +1,11 @@
 import { verifySession } from "@/src/auth/dal";
 import { getToken } from "@/src/auth/token";
 
-export async function GET(req: Request, { params }: { params: { budgetId: string, expenseId: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ budgetId: string, expenseId: string }> }) {
     await verifySession();
     const token = await getToken();
-    const url = `${process.env.API_URL}/budgets/${params.budgetId}/expenses/${params.expenseId}`;
+    const { budgetId, expenseId } = await params;
+    const url = `${process.env.API_URL}/budgets/${budgetId}/expenses/${expenseId}`;
     const request = await fetch(url, {
         headers: {
             "Content-Type": "application/json",
@@ -12,8 +13,8 @@ export async function GET(req: Request, { params }: { params: { budgetId: string
         }
     });
     const data = await request.json();
-    if (!data.ok) {
-        return Response.json(data.error, { status: 403 });
+    if (!request.ok) {
+        return Response.json(data.error || "Error al obtener el gasto", { status: request.status });
     }
-    return data;
+    return Response.json(data);
 }
