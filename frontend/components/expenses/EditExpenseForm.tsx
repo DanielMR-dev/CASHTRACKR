@@ -5,6 +5,8 @@ import { useParams, useSearchParams } from "next/navigation";
 import { DraftExpense } from "@/src/schemas";
 import { useFormState } from "react-dom";
 import editExpense from "@/actions/edit-expense-action";
+import ErrorMessage from "../ui/ErrorMessage";
+import { toast } from "react-toastify";
 
 export default function EditExpenseForm({ closeModal }: { closeModal: () => void }) {
     const [expense, setExpense] = useState<DraftExpense>();
@@ -29,6 +31,13 @@ export default function EditExpenseForm({ closeModal }: { closeModal: () => void
             .then(data => setExpense(data));
     }, [budgetId, expenseId]);
 
+    useEffect(() => {
+            if (state.success.message) {
+                toast.success(state.success.message);
+                closeModal();
+            }
+        }, [state, closeModal]);
+
     return (
         <>
             <DialogTitle
@@ -40,6 +49,7 @@ export default function EditExpenseForm({ closeModal }: { closeModal: () => void
             <p className="text-xl font-bold">Edita los detalles de un {''}
                 <span className="text-amber-500">gasto</span>
             </p>
+            {state.errors.map(error => <ErrorMessage key={error}>{error}</ErrorMessage>)}
             <form
                 className="bg-gray-100 shadow-lg rounded-lg p-10 mt-10 border border-gray-300"
                 noValidate
