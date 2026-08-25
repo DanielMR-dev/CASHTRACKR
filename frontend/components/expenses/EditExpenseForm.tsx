@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
+import { useFormState } from "react-dom";
 import { DialogTitle } from "@headlessui/react";
-import ExpenseForm from "./ExpenseForm";
+import { toast } from "react-toastify";
 import { useParams, useSearchParams } from "next/navigation";
 import { DraftExpense } from "@/src/schemas";
-import { useFormState } from "react-dom";
+import ExpenseForm from "./ExpenseForm";
 import editExpense from "@/actions/edit-expense-action";
 import ErrorMessage from "../ui/ErrorMessage";
-import { toast } from "react-toastify";
 
 export default function EditExpenseForm({ closeModal }: { closeModal: () => void }) {
     const [expense, setExpense] = useState<DraftExpense>();
@@ -32,11 +32,11 @@ export default function EditExpenseForm({ closeModal }: { closeModal: () => void
     }, [budgetId, expenseId]);
 
     useEffect(() => {
-            if (state.success.message) {
-                toast.success(state.success.message);
-                closeModal();
-            }
-        }, [state, closeModal]);
+        if (state.success.message) {
+            toast.success(state.success.message);
+            closeModal();
+        }
+    }, [state, closeModal]);
 
     return (
         <>

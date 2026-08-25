@@ -1,8 +1,10 @@
-import { useParams, useSearchParams } from "next/navigation";
-import { DialogTitle } from "@headlessui/react";
-import { useFormState } from "react-dom";
-import { deleteExpense } from "@/actions/delete-expense-action";
 import { useEffect } from "react";
+import { useFormState } from "react-dom";
+import { DialogTitle } from "@headlessui/react";
+import { toast } from "react-toastify";
+import { useParams, useSearchParams } from "next/navigation";
+import { deleteExpense } from "@/actions/delete-expense-action";
+import ErrorMessage from "../ui/ErrorMessage";
 
 type DeleteExpenseForm = {
     closeModal: () => void;
@@ -24,10 +26,17 @@ export default function DeleteExpenseForm({ closeModal }: DeleteExpenseForm) {
     });
 
     useEffect(() => {
+        if (state.success.message) {
+            toast.success(state.success.message);
+            closeModal();
+        }
+    }, [state, closeModal]);
+
+    useEffect(() => {
         if(!Number.isInteger(+budgetId) || !Number.isInteger(+expenseId)) {
             closeModal();
         }
-    }, [state])
+    }, [state, budgetId, expenseId, closeModal])
 
     return (
         <>
@@ -40,6 +49,7 @@ export default function DeleteExpenseForm({ closeModal }: DeleteExpenseForm) {
             <p className="text-xl font-bold">Confirma para eliminar, {''}
                 <span className="text-amber-500">el gasto</span>
             </p>
+            {state.errors.map(error => <ErrorMessage key={error}>{error}</ErrorMessage>)}
             <p className='text-gray-600 text-sm'>(Un gasto eliminado no se puede recuperar)</p>
             <div className="grid grid-cols-2 gap-5 mt-10">
                 <button
