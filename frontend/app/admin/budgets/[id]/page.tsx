@@ -18,6 +18,9 @@ export async function generateMetada({params}: {params: Promise<{id: string}>}) 
 export default async function BudgetDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const budget = await getBudget(id);
+
+    const totalSpend = budget.expenses.reduce((total, expense) => total + +expense.amount, 0);
+    const availableAmount = +budget.amount - totalSpend;
     return (
         <>
             <div className="flex justify-between items-center">
@@ -35,15 +38,15 @@ export default async function BudgetDetailsPage({ params }: { params: Promise<{ 
                         <div className="flex flex-col justify-center items-center md:items-start gap-5">
                             <Amount
                                 label="Presupuesto"
-                                amount={300}
+                                amount={+budget.amount}
                             />
                             <Amount
                                 label="Disponible"
-                                amount={300}
+                                amount={availableAmount}
                             />
                             <Amount
                                 label="Gastado"
-                                amount={300}
+                                amount={totalSpend}
                             />
                         </div>
                     </div>
