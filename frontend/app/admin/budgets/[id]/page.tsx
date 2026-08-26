@@ -5,6 +5,7 @@ import ModalContainer from "@/components/ui/ModalContainer";
 import { formatCurrency, formatDate } from "@/src/utils";
 import ExpenseMenu from "@/components/expenses/ExpenseMenu";
 import Amount from "@/components/ui/Amount";
+import ProgressBar from "@/components/budgets/ProgressBar";
 
 export async function generateMetada({params}: {params: Promise<{id: string}>}) : Promise<Metadata> {
     const { id } = await params;
@@ -34,7 +35,7 @@ export default async function BudgetDetailsPage({ params }: { params: Promise<{ 
             {budget.expenses.length ? (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 mt-5">
-                        <div>Gráfica aquí</div>
+                        <ProgressBar />
                         <div className="flex flex-col justify-center items-center md:items-start gap-5">
                             <Amount
                                 label="Presupuesto"
