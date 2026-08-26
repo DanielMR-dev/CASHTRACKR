@@ -22,6 +22,9 @@ export default async function BudgetDetailsPage({ params }: { params: Promise<{ 
 
     const totalSpend = budget.expenses.reduce((total, expense) => total + +expense.amount, 0);
     const availableAmount = +budget.amount - totalSpend;
+
+    const percentage = +((totalSpend / +budget.amount) * 100).toFixed(2);
+
     return (
         <>
             <div className="flex justify-between items-center">
@@ -35,7 +38,7 @@ export default async function BudgetDetailsPage({ params }: { params: Promise<{ 
             {budget.expenses.length ? (
                 <>
                     <div className="grid grid-cols-1 md:grid-cols-2 mt-5">
-                        <ProgressBar />
+                        <ProgressBar percentage={percentage} />
                         <div className="flex flex-col justify-center items-center md:items-start gap-5">
                             <Amount
                                 label="Presupuesto"
